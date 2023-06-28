@@ -1,4 +1,5 @@
 extern crate nannou;
+extern crate rand;
 
 use nannou::prelude::pt2;
 use nannou::prelude::*;
