@@ -1,5 +1,6 @@
-#Displaying Mazes with Nannou
-Repo for combining my maze-making [code](https://github.com/joaoag/mazes) with creative coding framework [Nannou](https://nannou.cc/).
+# Displaying Mazes with Nannou
+This repo combines my maze-making [code](https://github.com/joaoag/mazes) with creative coding framework [Nannou](https://nannou.cc/).
+It's my first Rust project so things are pretty rough and ready.
 ![Example maze, generated with binary tree](./example_maze.png)
 
 ## Running locally
