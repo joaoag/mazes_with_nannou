@@ -9,4 +9,4 @@ I've only used this on macOS, so if you're using something else your mileage may
 * Clone or fork this repo (see Github docs [here](https://docs.github.com/en/desktop/contributing-and-collaborating-using-github-desktop/adding-and-cloning-repositories/cloning-and-forking-repositories-from-github-desktop) for help)
 * Navigate to the repo in your terminal
 * Run `cargo run --release`
-* You should then see something like
+* You should then see something like the above image in a pop-out window
