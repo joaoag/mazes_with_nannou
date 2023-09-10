@@ -1,12 +1,13 @@
 extern crate nannou;
 extern crate rand;
 
+use std::env;
 use nannou::prelude::pt2;
 use nannou::prelude::*;
 
 use crate::maze::SmartGrid;
 use maze::{Direction, MazeCell};
-use maze_makers::binary_tree;
+use maze_makers::{binary_tree, side_winder};
 
 mod maze;
 mod maze_makers;
@@ -25,6 +26,17 @@ fn main() {
     nannou::app(model).event(event).simple_window(view).run();
 }
 
+fn get_maze_algorithm(algorithm_arg: Vec<String>) -> fn(SmartGrid) -> SmartGrid {
+    let algorithm = if algorithm_arg.len() > 1 { &algorithm_arg[1] } else { "binarytree" };
+
+    let validated_algorithm = match algorithm.as_ref() {
+        "binarytree" => binary_tree,
+        "sidewinder" => side_winder,
+        _ => panic!("Unrecognised algorithm"),
+    };
+    validated_algorithm
+}
+
 fn model(_app: &App) -> Model {
     let cell_size: f32 = 30.0;
     let columns = 20;
@@ -34,9 +46,13 @@ fn model(_app: &App) -> Model {
         columns,
         cells: Vec::new(),
     };
+
+    let args: Vec<String> = env::args().collect();
+    let validated_algorithm = get_maze_algorithm(args);
+
     grid.cells = grid.prepare_grid();
     grid.configure_cells();
-    grid = binary_tree(grid);
+    grid = validated_algorithm(grid);
 
     let x = -(columns as f32 / 2.0) * cell_size;
     let y = (rows as f32 / 2.0) * cell_size;
