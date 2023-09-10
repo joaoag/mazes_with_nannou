@@ -40,7 +40,7 @@ pub fn binary_tree(grid: SmartGrid) -> SmartGrid {
     grid
 }
 
-pub fn side_winder(grid: SmartGrid) -> SmartGrid {
+pub fn sidewinder(grid: SmartGrid) -> SmartGrid {
     for row in &grid.cells {
         let mut run: Vec<Location> = Vec::new();
 

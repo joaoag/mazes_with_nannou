@@ -7,7 +7,7 @@ use nannou::prelude::*;
 
 use crate::maze::SmartGrid;
 use maze::{Direction, MazeCell};
-use maze_makers::{binary_tree, side_winder};
+use maze_makers::{binary_tree, sidewinder};
 
 mod maze;
 mod maze_makers;
@@ -29,12 +29,11 @@ fn main() {
 fn get_maze_algorithm(algorithm_arg: Vec<String>) -> fn(SmartGrid) -> SmartGrid {
     let algorithm = if algorithm_arg.len() > 1 { &algorithm_arg[1] } else { "binarytree" };
 
-    let validated_algorithm = match algorithm.as_ref() {
+    match algorithm {
         "binarytree" => binary_tree,
-        "sidewinder" => side_winder,
+        "sidewinder" => sidewinder,
         _ => panic!("Unrecognised algorithm"),
-    };
-    validated_algorithm
+    }
 }
 
 fn model(_app: &App) -> Model {
