@@ -8,9 +8,11 @@ use nannou::prelude::*;
 use crate::maze::SmartGrid;
 use maze::{Direction, MazeCell};
 use maze_makers::{binary_tree, sidewinder};
+use constants::{*};
 
 mod maze;
 mod maze_makers;
+mod constants;
 
 struct Point {
     pub x: f32,
@@ -27,11 +29,11 @@ fn main() {
 }
 
 fn get_maze_algorithm(algorithm_arg: Vec<String>) -> fn(SmartGrid) -> SmartGrid {
-    let algorithm = if algorithm_arg.len() > 1 { &algorithm_arg[1] } else { "binarytree" };
+    let algorithm: &str = if algorithm_arg.len() > 1 { &algorithm_arg[1] } else { BINARY_TREE };
 
     match algorithm {
-        "binarytree" => binary_tree,
-        "sidewinder" => sidewinder,
+        BINARY_TREE => binary_tree,
+        SIDEWINDER => sidewinder,
         _ => panic!("Unrecognised algorithm"),
     }
 }
