@@ -8,7 +8,7 @@ use nannou::prelude::*;
 use crate::maze::SmartGrid;
 use maze::{Direction, MazeCell};
 use maze_makers::{binary_tree, sidewinder};
-use constants::{*};
+use constants::*;
 
 mod maze;
 mod maze_makers;
@@ -48,8 +48,8 @@ fn model(_app: &App) -> Model {
         cells: Vec::new(),
     };
 
-    let args: Vec<String> = env::args().collect();
-    let validated_algorithm = get_maze_algorithm(args);
+    let cli_args: Vec<String> = env::args().collect();
+    let validated_algorithm = get_maze_algorithm(cli_args);
 
     grid.cells = grid.prepare_grid();
     grid.configure_cells();
