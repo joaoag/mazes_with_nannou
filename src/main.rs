@@ -9,10 +9,12 @@ use crate::maze::SmartGrid;
 use maze::{Direction, MazeCell};
 use maze_makers::{binary_tree, sidewinder};
 use constants::*;
+use sidewinder_hardcoded::static_sidewinder;
 
 mod maze;
 mod maze_makers;
 mod constants;
+mod sidewinder_hardcoded;
 
 struct Point {
     pub x: f32,
@@ -28,32 +30,46 @@ fn main() {
     nannou::app(model).event(event).simple_window(view).run();
 }
 
-fn get_maze_algorithm(algorithm_arg: Vec<String>) -> fn(SmartGrid) -> SmartGrid {
-    let algorithm: &str = if algorithm_arg.len() > 1 { &algorithm_arg[1] } else { BINARY_TREE };
+fn parse_cli_args(algorithm_arg: Vec<String>) -> String {
+    if algorithm_arg.len() > 1 { String::from(&algorithm_arg[1]) } else { BINARY_TREE.to_string() }
+}
 
-    match algorithm {
-        BINARY_TREE => binary_tree,
+
+fn get_maze_algorithm(algorithm_arg: &str) -> fn(SmartGrid) -> SmartGrid {
+    match algorithm_arg {
+        BINARY_TREE => binary_tree ,
         SIDEWINDER => sidewinder,
         _ => panic!("Unrecognised algorithm"),
     }
 }
 
-fn model(_app: &App) -> Model {
-    let cell_size: f32 = 30.0;
-    let columns = 20;
-    let rows = 20;
+fn prepare_grid(columns: usize, rows: usize)-> SmartGrid {
+
     let mut grid = SmartGrid {
         rows,
         columns,
         cells: Vec::new(),
     };
-
-    let cli_args: Vec<String> = env::args().collect();
-    let validated_algorithm = get_maze_algorithm(cli_args);
-
     grid.cells = grid.prepare_grid();
     grid.configure_cells();
-    grid = validated_algorithm(grid);
+    grid
+}
+
+fn model(_app: &App) -> Model {
+    let cell_size: f32 = 50.0;
+    let columns = 4;
+    let rows = 4;
+    let algorithm_name = parse_cli_args(env::args().collect());
+
+    let mut grid;
+
+    if algorithm_name == STATIC_SIDEWINDER {
+        grid = static_sidewinder();
+    } else {
+        let validated_algorithm = get_maze_algorithm(&algorithm_name);
+        grid= prepare_grid(columns, rows);
+        grid = validated_algorithm(grid);
+    }
 
     let x = -(columns as f32 / 2.0) * cell_size;
     let y = (rows as f32 / 2.0) * cell_size;
@@ -97,6 +113,13 @@ fn view(_app: &App, _model: &Model, _frame: Frame) {
             let draw_west = cell.west.is_none();
             let draw_east = !MazeCell::is_linked(&cell, Direction::East);
             let draw_south = !MazeCell::is_linked(&cell, Direction::South);
+
+            // println!(
+            //     "For cell {:?},\nCell x y origin [{}, {}] \n",
+            //     &cell.location,
+            //     current_x_origin,
+            //     current_y_origin
+            // );
 
             if draw_north {
                 draw.line()
