@@ -167,7 +167,7 @@ impl SmartGrid {
     }
 }
 
-pub fn display_maze(grid: &SmartGrid) {
+pub fn cli_display(grid: &SmartGrid) {
     let start = String::from("+");
     let middle = "---+".repeat(grid.columns);
     let end = String::from("\n");

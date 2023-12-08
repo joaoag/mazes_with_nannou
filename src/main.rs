@@ -5,7 +5,7 @@ use std::env;
 use nannou::prelude::pt2;
 use nannou::prelude::*;
 
-use crate::maze::SmartGrid;
+use maze::{SmartGrid, cli_display};
 use maze::{Direction, MazeCell};
 use maze_makers::{binary_tree, sidewinder};
 use constants::*;
@@ -26,12 +26,26 @@ struct Model {
     pub cell_size: f32,
 }
 
+
 fn main() {
-    nannou::app(model).event(event).simple_window(view).run();
+
+    let args = parse_cli_args(env::args().collect());
+
+    // TODO use a cli args library because this implementation is horrible
+    if args[1] == NANNOU {
+        nannou::app(model).event(event).simple_window(view).run();
+    } else if args[1] == ASCII {
+        cli_display(&static_sidewinder());
+    }
 }
 
-fn parse_cli_args(algorithm_arg: Vec<String>) -> String {
-    if algorithm_arg.len() > 1 { String::from(&algorithm_arg[1]) } else { BINARY_TREE.to_string() }
+fn parse_cli_args(args: Vec<String>) -> Vec<String> {
+    let default_algo = &String::from(BINARY_TREE);
+    let default_mode = &String::from(NANNOU);
+    let algo = args.get(1).unwrap_or(default_algo);
+    let mode = args.get(2).unwrap_or(default_mode);
+
+    vec![algo.to_string(), mode.to_string()]
 }
 
 
@@ -59,14 +73,14 @@ fn model(_app: &App) -> Model {
     let cell_size: f32 = 50.0;
     let columns = 4;
     let rows = 4;
-    let algorithm_name = parse_cli_args(env::args().collect());
-
+    let args = parse_cli_args(env::args().collect());
+    // let (first, second, third) = if let [first, second, third] = elements[0..2] { (first, second, third) } else { todo!() };
     let mut grid;
 
-    if algorithm_name == STATIC_SIDEWINDER {
+    if args[0] == STATIC_SIDEWINDER {
         grid = static_sidewinder();
     } else {
-        let validated_algorithm = get_maze_algorithm(&algorithm_name);
+        let validated_algorithm = get_maze_algorithm(&args[0]);
         grid= prepare_grid(columns, rows);
         grid = validated_algorithm(grid);
     }

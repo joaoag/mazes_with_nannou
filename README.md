@@ -24,3 +24,15 @@ You can also generate a static maze, using the sidewinder algorithm, by passing 
 ```shell script
 cargo run -- static_sidewinder
 ```
+
+### Choosing your maze display
+By default, the maze will be displayed using [Nannou](https://nannou.cc/).
+However, if you'd like to display your maze in the terminal using ASCII art, you can enter a second argument `ascii`
+```shell script
+cargo run -- static_sidewinder ascii
+```
+
+## To Do
+* Use a CLI args library to replace the janky "I'll just do something myself" implementation
+* Restructure code, removing stuff from main that does not need to be there
+* Allow ASCII version to display something other than a static sidewinder maze 
