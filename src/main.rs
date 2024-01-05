@@ -74,7 +74,6 @@ fn model(_app: &App) -> Model {
     let columns = 4;
     let rows = 4;
     let args = parse_cli_args(env::args().collect());
-    // let (first, second, third) = if let [first, second, third] = elements[0..2] { (first, second, third) } else { todo!() };
     let mut grid;
 
     if args[0] == STATIC_SIDEWINDER {
@@ -127,13 +126,6 @@ fn view(_app: &App, _model: &Model, _frame: Frame) {
             let draw_west = cell.west.is_none();
             let draw_east = !MazeCell::is_linked(&cell, Direction::East);
             let draw_south = !MazeCell::is_linked(&cell, Direction::South);
-
-            // println!(
-            //     "For cell {:?},\nCell x y origin [{}, {}] \n",
-            //     &cell.location,
-            //     current_x_origin,
-            //     current_y_origin
-            // );
 
             if draw_north {
                 draw.line()
