@@ -33,6 +33,9 @@ cargo run -- static_sidewinder ascii
 ```
 
 ## To Do
+* Add other algorithms
+* Add documentation on maze solving functionality 
 * Use a CLI args library to replace the janky "I'll just do something myself" implementation
+  * Add args for cell size, 
 * Restructure code, removing stuff from main that does not need to be there
 * Allow ASCII version to display something other than a static sidewinder maze 
