@@ -1,9 +1,11 @@
 extern crate nannou;
+extern crate nannou_egui;
 extern crate rand;
 
 use std::env;
 use nannou::prelude::pt2;
 use nannou::prelude::*;
+use nannou_egui::{egui, Egui};
 
 use maze::{SmartGrid, cli_display};
 use maze::{Direction, MazeCell};
@@ -16,11 +18,17 @@ mod maze_makers;
 mod constants;
 mod sidewinder_hardcoded;
 
+struct Settings {
+    generate: bool
+}
+
 struct Point {
     pub x: f32,
     pub y: f32,
 }
 struct Model {
+    pub settings: Settings,
+    pub egui: Egui,
     pub grid: SmartGrid,
     pub origin: Point,
     pub cell_size: f32,
@@ -28,33 +36,7 @@ struct Model {
 
 
 fn main() {
-
-    let args = parse_cli_args(env::args().collect());
-
-    // TODO use a cli args library because this implementation is horrible
-    if args[1] == NANNOU {
-        nannou::app(model).event(event).simple_window(view).run();
-    } else if args[1] == ASCII {
-        cli_display(&static_sidewinder());
-    }
-}
-
-fn parse_cli_args(args: Vec<String>) -> Vec<String> {
-    let default_algo = &String::from(BINARY_TREE);
-    let default_mode = &String::from(NANNOU);
-    let algo = args.get(1).unwrap_or(default_algo);
-    let mode = args.get(2).unwrap_or(default_mode);
-
-    vec![algo.to_string(), mode.to_string()]
-}
-
-
-fn get_maze_algorithm(algorithm_arg: &str) -> fn(SmartGrid) -> SmartGrid {
-    match algorithm_arg {
-        BINARY_TREE => binary_tree ,
-        SIDEWINDER => sidewinder,
-        _ => panic!("Unrecognised algorithm"),
-    }
+     nannou::app(model).update(update).run();
 }
 
 fn prepare_grid(columns: usize, rows: usize)-> SmartGrid {
@@ -69,49 +51,73 @@ fn prepare_grid(columns: usize, rows: usize)-> SmartGrid {
     grid
 }
 
-fn model(_app: &App) -> Model {
+fn model(app: &App) -> Model {
     let cell_size: f32 = 50.0;
     let columns = 4;
     let rows = 4;
-    let args = parse_cli_args(env::args().collect());
+    let settings = Settings {generate: false};
     let mut grid;
 
-    if args[0] == STATIC_SIDEWINDER {
-        grid = static_sidewinder();
-    } else {
-        let validated_algorithm = get_maze_algorithm(&args[0]);
-        grid= prepare_grid(columns, rows);
-        grid = validated_algorithm(grid);
-    }
+    let window_id = app
+        .new_window()
+        .view(view)
+        .raw_event(raw_window_event)
+        .build()
+        .unwrap();
+    let window = app.window(window_id).unwrap();
+
+    let egui = Egui::from_window(&window);
+
+    grid = static_sidewinder();
+
 
     let x = -(columns as f32 / 2.0) * cell_size;
     let y = (rows as f32 / 2.0) * cell_size;
     let origin = Point { x, y };
 
     Model {
+        settings,
+        egui,
         grid,
         origin,
         cell_size,
     }
 }
 
-fn event(_app: &App, _model: &mut Model, _event: Event) {}
+fn update(_app: &App, model: &mut Model, update: Update) {
+    let egui = &mut model.egui;
+    egui.set_elapsed_time(update.since_start);
+    let ctx = egui.begin_frame();
 
-fn view(_app: &App, _model: &Model, _frame: Frame) {
-    let draw = _app.draw();
+    egui::Window::new("Maze Maker").show(&ctx, | ui| {
 
-    for row in &_model.grid.cells {
+        let generate = ui.button("Generate!").clicked();
+        if generate {
+            println!("Yeaaaasssssssssss");
+        }
+    });
+}
+fn raw_window_event(_app: &App, model: &mut Model, event: &nannou::winit::event::WindowEvent) {
+    // Let egui handle things like keyboard and mouse input.
+    model.egui.handle_raw_event(event);
+}
+
+fn view(app: &App, model: &Model, frame: Frame) {
+    let draw = app.draw();
+    draw.background().color(BLACK);
+
+    for row in &model.grid.cells {
         for cell in row.iter() {
             let cell = cell.borrow_mut();
 
             let x_index = cell.location.column;
-            let x_origin = &_model.origin.x;
-            let cell_size = &_model.cell_size;
+            let x_origin = &model.origin.x;
+            let cell_size = &model.cell_size;
             let current_x_origin = x_origin + (x_index as f32 * cell_size).floor();
 
             let y_index = cell.location.row;
-            let y_origin = &_model.origin.y;
-            let size = &_model.cell_size;
+            let y_origin = &model.origin.y;
+            let size = &model.cell_size;
             let current_y_origin = y_origin - (y_index as f32 * size).floor();
 
             let north_west_point = pt2(current_x_origin, current_y_origin);
@@ -158,6 +164,9 @@ fn view(_app: &App, _model: &Model, _frame: Frame) {
         }
     }
 
-    draw.background().color(BLACK);
-    draw.to_frame(_app, &_frame).unwrap();
+
+    draw.to_frame(app, &frame).unwrap();
+    model.egui.draw_to_frame(&frame).unwrap();
 }
+
+
