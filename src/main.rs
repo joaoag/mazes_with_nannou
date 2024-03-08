@@ -16,7 +16,8 @@ mod constants;
 mod sidewinder_hardcoded;
 
 struct Settings {
-    generate: bool
+    generate: bool,
+    save: bool
 }
 
 struct Point {
@@ -52,7 +53,7 @@ fn model(app: &App) -> Model {
     let cell_size: f32 = 50.0;
     let columns = 4;
     let rows = 4;
-    let settings = Settings {generate: false};
+    let settings = Settings {generate: false, save: false};
 
     let window_id = app
         .new_window()
@@ -89,6 +90,7 @@ fn update(_app: &App, model: &mut Model, update: Update) {
 
     egui::Window::new("Maze Maker").show(&ctx, | ui| {
         settings.generate = ui.button("Make me a maze!").clicked();
+        settings.save = ui.button("Save my maze!").clicked();
     });
 
     if settings.generate {
@@ -109,6 +111,10 @@ fn view(app: &App, model: &Model, frame: Frame) {
 
     draw.to_frame(app, &frame).unwrap();
     model.egui.draw_to_frame(&frame).unwrap();
+    if model.settings.save {
+        let file_path = captured_frame_path(app, &frame);
+        app.main_window().capture_frame(file_path);
+    }
 }
 
 fn draw_maze(model: &&Model, draw: &Draw) {
@@ -172,3 +178,14 @@ fn draw_maze(model: &&Model, draw: &Draw) {
 }
 
 
+fn captured_frame_path(app: &App, frame: &Frame) -> std::path::PathBuf {
+    // Create a path that we want to save this frame to.
+    app.project_path()
+        .expect("failed to locate `project_path`")
+        // Capture all frames to a directory called `/<path_to_nannou>/nannou/simple_capture`.
+        .join(app.exe_name().unwrap())
+        // Name each file after the number of the frame.
+        .join(format!("{:03}", frame.nth()))
+        // The extension will be PNG. We also support tiff, bmp, gif, jpeg, webp and some others.
+        .with_extension("png")
+}

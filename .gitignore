@@ -5,3 +5,5 @@
 #IntelliJ Config
 .idea/
 
+#Saved images path
+mazes_with_nannou/
