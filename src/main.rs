@@ -2,16 +2,13 @@ extern crate nannou;
 extern crate nannou_egui;
 extern crate rand;
 
-use std::env;
 use nannou::prelude::pt2;
 use nannou::prelude::*;
 use nannou_egui::{egui, Egui};
 
-use maze::{SmartGrid, cli_display};
+use maze::{SmartGrid};
 use maze::{Direction, MazeCell};
 use maze_makers::{binary_tree, sidewinder};
-use constants::*;
-use sidewinder_hardcoded::static_sidewinder;
 
 mod maze;
 mod maze_makers;
@@ -29,7 +26,7 @@ struct Point {
 struct Model {
     pub settings: Settings,
     pub egui: Egui,
-    pub grid: SmartGrid,
+    pub maze: SmartGrid,
     pub origin: Point,
     pub cell_size: f32,
 }
@@ -56,7 +53,6 @@ fn model(app: &App) -> Model {
     let columns = 4;
     let rows = 4;
     let settings = Settings {generate: false};
-    let mut grid;
 
     let window_id = app
         .new_window()
@@ -68,17 +64,17 @@ fn model(app: &App) -> Model {
 
     let egui = Egui::from_window(&window);
 
-    grid = static_sidewinder();
-
-
     let x = -(columns as f32 / 2.0) * cell_size;
     let y = (rows as f32 / 2.0) * cell_size;
     let origin = Point { x, y };
 
+    let grid= prepare_grid(columns, rows);
+    let maze = binary_tree(grid);
+    
     Model {
         settings,
         egui,
-        grid,
+        maze,
         origin,
         cell_size,
     }
@@ -86,16 +82,24 @@ fn model(app: &App) -> Model {
 
 fn update(_app: &App, model: &mut Model, update: Update) {
     let egui = &mut model.egui;
+    let settings = &mut model.settings;
+    settings.generate = false;
+
     egui.set_elapsed_time(update.since_start);
     let ctx = egui.begin_frame();
 
     egui::Window::new("Maze Maker").show(&ctx, | ui| {
 
-        let generate = ui.button("Generate!").clicked();
-        if generate {
-            println!("Yeaaaasssssssssss");
+        let generate_selected = ui.button("Make me a maze!").clicked();
+        if generate_selected {
+            settings.generate = true;
         }
     });
+    if settings.generate {
+        let grid= prepare_grid(model.maze.columns, model.maze.rows);
+        model.maze = binary_tree(grid);
+
+    }
 }
 fn raw_window_event(_app: &App, model: &mut Model, event: &nannou::winit::event::WindowEvent) {
     // Let egui handle things like keyboard and mouse input.
@@ -104,9 +108,17 @@ fn raw_window_event(_app: &App, model: &mut Model, event: &nannou::winit::event:
 
 fn view(app: &App, model: &Model, frame: Frame) {
     let draw = app.draw();
+
     draw.background().color(BLACK);
 
-    for row in &model.grid.cells {
+    draw_maze(&model, &draw);
+
+    draw.to_frame(app, &frame).unwrap();
+    model.egui.draw_to_frame(&frame).unwrap();
+}
+
+fn draw_maze(model: &&Model, draw: &Draw) {
+    for row in &model.maze.cells {
         for cell in row.iter() {
             let cell = cell.borrow_mut();
 
@@ -163,10 +175,6 @@ fn view(app: &App, model: &Model, frame: Frame) {
             }
         }
     }
-
-
-    draw.to_frame(app, &frame).unwrap();
-    model.egui.draw_to_frame(&frame).unwrap();
 }
 
 

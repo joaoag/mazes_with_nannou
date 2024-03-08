@@ -52,7 +52,7 @@ impl MazeCell {
     }
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct SmartGrid {
     pub rows: usize,
     pub columns: usize,
