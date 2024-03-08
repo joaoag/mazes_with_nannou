@@ -83,22 +83,16 @@ fn model(app: &App) -> Model {
 fn update(_app: &App, model: &mut Model, update: Update) {
     let egui = &mut model.egui;
     let settings = &mut model.settings;
-    settings.generate = false;
 
     egui.set_elapsed_time(update.since_start);
     let ctx = egui.begin_frame();
 
     egui::Window::new("Maze Maker").show(&ctx, | ui| {
-
-        let generate_selected = ui.button("Make me a maze!").clicked();
-        if generate_selected {
-            settings.generate = true;
-        }
+        settings.generate = ui.button("Make me a maze!").clicked();
     });
-    if settings.generate {
-        let grid= prepare_grid(model.maze.columns, model.maze.rows);
-        model.maze = binary_tree(grid);
 
+    if settings.generate {
+        model.maze = binary_tree(prepare_grid(model.maze.columns, model.maze.rows));
     }
 }
 fn raw_window_event(_app: &App, model: &mut Model, event: &nannou::winit::event::WindowEvent) {
