@@ -19,6 +19,8 @@ struct Settings {
     generate: bool,
     save: bool,
     algo: Algos,
+    height: f64,
+    width: f64,
 }
 
 struct Point {
@@ -61,6 +63,8 @@ fn model(app: &App) -> Model {
         generate: false,
         save: false,
         algo: Algos::BinaryTree,
+        height: 4.0,
+        width: 4.0,
     };
 
     let window_id = app
@@ -99,10 +103,16 @@ fn update(_app: &App, model: &mut Model, update: Update) {
     let ctx = egui.begin_frame();
 
     egui::Window::new("Maze Maker").show(&ctx, |ui| {
-        settings.generate = ui.button("Make me a maze!").clicked();
+        settings.generate = ui.button("Generate!").clicked();
         settings.save = ui.button("Save my maze!").clicked();
 
         ui.separator();
+
+        ui.label("Height:");
+        ui.add(egui::Slider::new(&mut settings.height, 2.0..=20.0));
+
+        ui.label("Width:");
+        ui.add(egui::Slider::new(&mut settings.width, 2.0..=20.0));
 
         ui.horizontal(|ui| {
             ui.radio_value(&mut settings.algo, Algos::BinaryTree, "Binary tree");
@@ -111,7 +121,9 @@ fn update(_app: &App, model: &mut Model, update: Update) {
     });
 
     if settings.generate {
-        let base_grid = prepare_grid(model.maze.columns, model.maze.rows);
+        let rows = settings.height as usize;
+        let columns = settings.width as usize;
+        let base_grid = prepare_grid(columns, rows);
         model.maze = generate_maze(base_grid, &settings.algo)
     }
 }
