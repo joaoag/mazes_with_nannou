@@ -6,19 +6,19 @@ use nannou::prelude::pt2;
 use nannou::prelude::*;
 use nannou_egui::{egui, Egui};
 
-use maze::{SmartGrid};
+use maze::SmartGrid;
 use maze::{Direction, MazeCell};
 use maze_makers::{binary_tree, sidewinder};
 
+mod constants;
 mod maze;
 mod maze_makers;
-mod constants;
 mod sidewinder_hardcoded;
 
 struct Settings {
     generate: bool,
     save: bool,
-    algo: Algos
+    algo: Algos,
 }
 
 struct Point {
@@ -26,7 +26,10 @@ struct Point {
     pub y: f32,
 }
 #[derive(PartialEq, Debug)]
-enum Algos { BinaryTree, Sidewinder}
+enum Algos {
+    BinaryTree,
+    Sidewinder,
+}
 struct Model {
     pub settings: Settings,
     pub egui: Egui,
@@ -35,13 +38,11 @@ struct Model {
     pub cell_size: f32,
 }
 
-
 fn main() {
-     nannou::app(model).update(update).run();
+    nannou::app(model).update(update).run();
 }
 
-fn prepare_grid(columns: usize, rows: usize)-> SmartGrid {
-
+fn prepare_grid(columns: usize, rows: usize) -> SmartGrid {
     let mut grid = SmartGrid {
         rows,
         columns,
@@ -56,7 +57,11 @@ fn model(app: &App) -> Model {
     let cell_size: f32 = 50.0;
     let columns = 4;
     let rows = 4;
-    let settings = Settings {generate: false, save: false, algo: Algos::BinaryTree };
+    let settings = Settings {
+        generate: false,
+        save: false,
+        algo: Algos::BinaryTree,
+    };
 
     let window_id = app
         .new_window()
@@ -72,7 +77,7 @@ fn model(app: &App) -> Model {
     let y = (rows as f32 / 2.0) * cell_size;
     let origin = Point { x, y };
 
-    let grid= prepare_grid(columns, rows);
+    let grid = prepare_grid(columns, rows);
     let maze = binary_tree(grid);
     Model {
         settings,
@@ -84,7 +89,6 @@ fn model(app: &App) -> Model {
 }
 
 fn update(_app: &App, model: &mut Model, update: Update) {
-
     let Model {
         ref mut egui,
         ref mut settings,
@@ -94,7 +98,7 @@ fn update(_app: &App, model: &mut Model, update: Update) {
     egui.set_elapsed_time(update.since_start);
     let ctx = egui.begin_frame();
 
-    egui::Window::new("Maze Maker").show(&ctx, | ui| {
+    egui::Window::new("Maze Maker").show(&ctx, |ui| {
         settings.generate = ui.button("Make me a maze!").clicked();
         settings.save = ui.button("Save my maze!").clicked();
 
@@ -115,11 +119,9 @@ fn generate_maze(base_grid: SmartGrid, algorithm: &Algos) -> SmartGrid {
     let selected_algorithm = match algorithm {
         Algos::BinaryTree => binary_tree,
         Algos::Sidewinder => sidewinder,
-
     };
     selected_algorithm(base_grid)
 }
-
 
 fn raw_window_event(_app: &App, model: &mut Model, event: &nannou::winit::event::WindowEvent) {
     // Let egui handle things like keyboard and mouse input.
@@ -200,7 +202,6 @@ fn draw_maze(model: &&Model, draw: &Draw) {
         }
     }
 }
-
 
 fn captured_frame_path(app: &App, frame: &Frame) -> std::path::PathBuf {
     // Create a path that we want to save this frame to.
