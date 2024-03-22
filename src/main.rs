@@ -17,13 +17,16 @@ mod sidewinder_hardcoded;
 
 struct Settings {
     generate: bool,
-    save: bool
+    save: bool,
+    algo: Algos
 }
 
 struct Point {
     pub x: f32,
     pub y: f32,
 }
+#[derive(PartialEq, Debug)]
+enum Algos { BinaryTree, Sidewinder}
 struct Model {
     pub settings: Settings,
     pub egui: Egui,
@@ -53,7 +56,7 @@ fn model(app: &App) -> Model {
     let cell_size: f32 = 50.0;
     let columns = 4;
     let rows = 4;
-    let settings = Settings {generate: false, save: false};
+    let settings = Settings {generate: false, save: false, algo: Algos::BinaryTree };
 
     let window_id = app
         .new_window()
@@ -71,7 +74,6 @@ fn model(app: &App) -> Model {
 
     let grid= prepare_grid(columns, rows);
     let maze = binary_tree(grid);
-    
     Model {
         settings,
         egui,
@@ -82,8 +84,12 @@ fn model(app: &App) -> Model {
 }
 
 fn update(_app: &App, model: &mut Model, update: Update) {
-    let egui = &mut model.egui;
-    let settings = &mut model.settings;
+
+    let Model {
+        ref mut egui,
+        ref mut settings,
+        ..
+    } = *model;
 
     egui.set_elapsed_time(update.since_start);
     let ctx = egui.begin_frame();
@@ -91,12 +97,30 @@ fn update(_app: &App, model: &mut Model, update: Update) {
     egui::Window::new("Maze Maker").show(&ctx, | ui| {
         settings.generate = ui.button("Make me a maze!").clicked();
         settings.save = ui.button("Save my maze!").clicked();
+
+        ui.separator();
+
+        ui.horizontal(|ui| {
+            ui.radio_value(&mut settings.algo, Algos::BinaryTree, "Binary tree");
+            ui.radio_value(&mut settings.algo, Algos::Sidewinder, "Sidewinder");
+        });
     });
 
     if settings.generate {
-        model.maze = binary_tree(prepare_grid(model.maze.columns, model.maze.rows));
+        let base_grid = prepare_grid(model.maze.columns, model.maze.rows);
+        model.maze = generate_maze(base_grid, &settings.algo)
     }
 }
+fn generate_maze(base_grid: SmartGrid, algorithm: &Algos) -> SmartGrid {
+    let selected_algorithm = match algorithm {
+        Algos::BinaryTree => binary_tree,
+        Algos::Sidewinder => sidewinder,
+
+    };
+    selected_algorithm(base_grid)
+}
+
+
 fn raw_window_event(_app: &App, model: &mut Model, event: &nannou::winit::event::WindowEvent) {
     // Let egui handle things like keyboard and mouse input.
     model.egui.handle_raw_event(event);
