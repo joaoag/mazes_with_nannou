@@ -21,6 +21,7 @@ struct Settings {
     algo: Algos,
     height: f64,
     width: f64,
+    density: f32
 }
 
 struct Point {
@@ -65,6 +66,7 @@ fn model(app: &App) -> Model {
         algo: Algos::BinaryTree,
         height: 4.0,
         width: 4.0,
+        density: cell_size
     };
 
     let window_id = app
@@ -114,6 +116,9 @@ fn update(_app: &App, model: &mut Model, update: Update) {
         ui.label("Width:");
         ui.add(egui::Slider::new(&mut settings.width, 2.0..=20.0));
 
+        ui.label("Corridor size");
+        ui.add(egui::Slider::new(&mut settings.density, 0.1..=100.0));
+
         ui.horizontal(|ui| {
             ui.radio_value(&mut settings.algo, Algos::BinaryTree, "Binary tree");
             ui.radio_value(&mut settings.algo, Algos::Sidewinder, "Sidewinder");
@@ -121,9 +126,16 @@ fn update(_app: &App, model: &mut Model, update: Update) {
     });
 
     if settings.generate {
+
+        model.cell_size = settings.density;
         let rows = settings.height as usize;
         let columns = settings.width as usize;
         let base_grid = prepare_grid(columns, rows);
+
+        let x = -(columns as f32 / 2.0) * model.cell_size;
+        let y = (rows as f32 / 2.0) * model.cell_size;
+        model.origin = Point { x, y };
+
         model.maze = generate_maze(base_grid, &settings.algo)
     }
 }
