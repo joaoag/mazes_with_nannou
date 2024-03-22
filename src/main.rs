@@ -21,7 +21,7 @@ struct Settings {
     algo: Algos,
     height: f64,
     width: f64,
-    density: f32
+    density: f32,
 }
 
 struct Point {
@@ -66,7 +66,7 @@ fn model(app: &App) -> Model {
         algo: Algos::BinaryTree,
         height: 4.0,
         width: 4.0,
-        density: cell_size
+        density: cell_size,
     };
 
     let window_id = app
@@ -126,7 +126,6 @@ fn update(_app: &App, model: &mut Model, update: Update) {
     });
 
     if settings.generate {
-
         model.cell_size = settings.density;
         let rows = settings.height as usize;
         let columns = settings.width as usize;
