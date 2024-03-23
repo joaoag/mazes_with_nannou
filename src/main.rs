@@ -57,15 +57,15 @@ fn prepare_grid(columns: usize, rows: usize) -> SmartGrid {
 }
 
 fn model(app: &App) -> Model {
-    let cell_size: f32 = 50.0;
-    let columns = 4;
-    let rows = 4;
+    let cell_size: f32 = 30.0;
+    let columns = 15;
+    let rows = 15;
     let settings = Settings {
         generate: false,
         save: false,
         algo: Algos::BinaryTree,
-        height: 4.0,
-        width: 4.0,
+        height: 15.0,
+        width: 15.0,
         density: cell_size,
     };
 
