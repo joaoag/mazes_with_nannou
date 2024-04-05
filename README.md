@@ -8,19 +8,22 @@ Make sure you have Rust lang installed (instructions [here](https://www.rust-lan
 I've only used this on macOS, so if you're using something else your mileage may vary.
 
 Steps for running locally:
-1. Clone or fork this repo (see Github docs [here](https://docs.github.com/en/desktop/contributing-and-collaborating-using-github-desktop/adding-and-cloning-repositories/cloning-and-forking-repositories-from-github-desktop) for help)
+1. Clone or fork this repo (see GitHub docs [here](https://docs.github.com/en/desktop/contributing-and-collaborating-using-github-desktop/adding-and-cloning-repositories/cloning-and-forking-repositories-from-github-desktop) for help)
 2. Navigate to the repo in your terminal
 3. Run `cargo run`
 4. You should then see something like the below:
 ![Screenshot of the UI, set to default values](./ui_screenshot.png)
 
-### UI overview
-* `Generate!` creates a maze, using the current settings from the UI
-* `Save my maze!` exports a png of the generated maze to a `mazes_with_nannou` sub-directory in the project
-* `Height` sets the number of walls on the vertical axis
-* `Width` sets the number of walls on the horizontal axis
-* `Corrider size` sets the size of the empty space between the walls
-* `Binary tree`, `Sidewinder` the two maze-making algorithms currently available (more to come soon!)
+### User guide
+
+| Button                      | Behaviour                                                                                 |
+|-----------------------------|-------------------------------------------------------------------------------------------|
+| `Generate!`                 | creates a maze, using the current settings from the UI                                    |
+| `Save my maze!`             | exports a png of the generated maze to a `mazes_with_nannou` sub-directory in the project |
+| `Height`                    | sets the number of walls on the vertical axis                                             |
+| `Width`                     | sets the number of walls on the horizontal axis                                           |
+| `Corrider size`             | sets the size of the empty space between the walls                                        |
+| `Binary tree`, `Sidewinder` | the two maze-making algorithms currently available (more to come soon!)                   |
 
 
 ## To Do
