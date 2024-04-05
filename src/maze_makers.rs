@@ -1,11 +1,13 @@
+use std::cell::RefMut;
 use rand::Rng;
 
-use crate::maze::{Location, SmartGrid};
+use crate::maze::{Location, MazeCell, SmartGrid};
 use rand::seq::SliceRandom;
 
 const BIDI: bool = true;
 
 fn binary_tree_random_neighbour(eastern: Location, northern: Location) -> Location {
+    // Do I need to do this in two steps?
     let mut neighbours: Vec<Location> = vec![];
     neighbours.extend([eastern, northern]);
 
@@ -73,5 +75,56 @@ pub fn sidewinder(grid: SmartGrid) -> SmartGrid {
             }
         }
     }
+    grid
+}
+
+
+pub fn aldous_broder(grid: SmartGrid) -> SmartGrid {
+// pick a cell at random (walk_root)
+// mark it as visited
+// pick random neighbour (walk_neighbour)
+// has this cell been visited?
+// if yes:
+//   make walk_neighbour walk_root
+// if no:
+//   mark it as visited && linked to walk_root
+//   make walk_neighbour walk_root
+// and process starts again
+// continue until each cell is visited
+
+    let mut unvisited_count = grid.columns * 2; // when this is 0, return grid
+    let random_row = rand::thread_rng().gen_range(0..=grid.rows -1);
+    let random_column = rand::thread_rng().gen_range(0..=grid.columns -1);
+    let random_location = Location{row: random_row, column: random_column};
+
+    while unvisited_count > 0 {
+        let cell = grid.cells[random_row][random_column].borrow_mut();
+
+        let neighbours = vec![cell.north, cell.east, cell.south, cell.west];
+        let filtered_neighbours = neighbours.into_iter().filter(|n| n.is_some()).map(|i| i.unwrap()).collect::<Vec<_>>();
+        let random_neighbour_location = filtered_neighbours.choose(&mut rand::thread_rng()).unwrap();
+        // need to work out how to read random neighbours links contents
+        // maybe impl is_linked() for MazeCell
+        let random_neighbour = &grid.cells[random_neighbour_location.row][random_neighbour_location.column];
+        let unlinked = random_neighbour.clone().take().no_links();
+        if unlinked {
+            unvisited_count -= 1;
+            SmartGrid::link_cells(&grid, cell, *random_neighbour_location, BIDI)
+        }
+
+
+
+        // println!("Cell Row{:?}", &cell_row);
+        // println!("Cell{:?}", &cell);
+        // println!("Neighbours {:?}", &neighbours);
+        // println!("Filtered neighbours {:?}", &filtered_neighbours);
+        println!("random_neighbour_location {:?}", &random_neighbour_location);
+
+    }
+
+
+
+
+
     grid
 }

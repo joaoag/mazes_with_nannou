@@ -38,6 +38,13 @@ impl MazeCell {
             ..Default::default()
         }
     }
+    pub fn no_links(&self) -> bool {
+        return if self.links.is_empty() {
+            false
+        } else {
+            true
+        }
+    }
     pub fn is_linked(&self, direction: Direction) -> bool {
         if self.links.is_empty() {
             return false;
@@ -78,7 +85,7 @@ impl SmartGrid {
         cells
     }
 
-    pub fn get_neighbour(
+    pub fn set_neighbour(
         rows: &i32,
         columns: &i32,
         current_location: &Location,
@@ -155,13 +162,13 @@ impl SmartGrid {
                 let mut cell = cell.borrow_mut();
 
                 cell.north =
-                    SmartGrid::get_neighbour(&rows, &columns, &cell.location, Direction::North);
+                    SmartGrid::set_neighbour(&rows, &columns, &cell.location, Direction::North);
                 cell.east =
-                    SmartGrid::get_neighbour(&rows, &columns, &cell.location, Direction::East);
+                    SmartGrid::set_neighbour(&rows, &columns, &cell.location, Direction::East);
                 cell.south =
-                    SmartGrid::get_neighbour(&rows, &columns, &cell.location, Direction::South);
+                    SmartGrid::set_neighbour(&rows, &columns, &cell.location, Direction::South);
                 cell.west =
-                    SmartGrid::get_neighbour(&rows, &columns, &cell.location, Direction::West);
+                    SmartGrid::set_neighbour(&rows, &columns, &cell.location, Direction::West);
             }
         }
     }
