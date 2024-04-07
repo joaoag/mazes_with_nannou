@@ -87,7 +87,7 @@ pub fn aldous_broder(grid: SmartGrid) -> SmartGrid {
     while unvisited_count > 0 {
         let neighbours = current_cell.borrow().get_neighbours();
         let random_neighbour_location = neighbours.choose(&mut rand::thread_rng()).unwrap();
-        let mut random_neighbour =
+        let random_neighbour =
             &grid.cells[random_neighbour_location.row][random_neighbour_location.column];
 
         if random_neighbour.borrow().is_unlinked() {

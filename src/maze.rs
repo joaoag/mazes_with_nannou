@@ -40,12 +40,10 @@ impl MazeCell {
     }
     pub fn get_neighbours(&self) -> Vec<Location> {
         let neighbours = vec![self.north, self.east, self.south, self.west];
-        let filtered_neighbours = neighbours
+        neighbours
             .into_iter()
-            .filter(|n| n.is_some())
-            .map(|i| i.unwrap())
-            .collect::<Vec<_>>();
-        filtered_neighbours
+            .flatten()
+            .collect::<Vec<_>>()
     }
     pub fn is_unlinked(&self) -> bool {
         self.links.is_empty()
