@@ -16,14 +16,14 @@ Steps for running locally:
 
 ### User guide
 
-| Button                      | Behaviour                                                                                 |
-|-----------------------------|-------------------------------------------------------------------------------------------|
-| `Generate!`                 | creates a maze, using the current settings from the UI                                    |
-| `Save my maze!`             | exports a png of the generated maze to a `mazes_with_nannou` sub-directory in the project |
-| `Height`                    | sets the number of walls on the vertical axis                                             |
-| `Width`                     | sets the number of walls on the horizontal axis                                           |
-| `Corrider size`             | sets the size of the empty space between the walls                                        |
-| `Binary tree`, `Sidewinder` | the two maze-making algorithms currently available (more to come soon!)                   |
+| Button                                       | Behaviour                                                                                 |
+|----------------------------------------------|-------------------------------------------------------------------------------------------|
+| `Generate!`                                  | creates a maze, using the current settings from the UI                                    |
+| `Save my maze!`                              | exports a png of the generated maze to a `mazes_with_nannou` sub-directory in the project |
+| `Height`                                     | sets the number of walls on the vertical axis                                             |
+| `Width`                                      | sets the number of walls on the horizontal axis                                           |
+| `Corrider size`                              | sets the size of the empty space between the walls                                        |
+| `Binary tree`, `Sidewinder`, `Aldous-Broder` | the three maze-making algorithms currently available                                      |
 
 
 ## To Do
