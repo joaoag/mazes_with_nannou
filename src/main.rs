@@ -6,10 +6,10 @@
 // use nannou::prelude::*;
 // use nannou_egui::{egui, Egui};
 //
+use crate::maze::cli_display;
 use maze::SmartGrid;
 use maze::{Direction, MazeCell};
-use maze_makers::{binary_tree, sidewinder, aldous_broder};
-use crate::maze::cli_display;
+use maze_makers::{aldous_broder, binary_tree, sidewinder};
 
 mod constants;
 mod maze;

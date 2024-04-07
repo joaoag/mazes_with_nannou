@@ -1,5 +1,5 @@
-use std::cell::RefMut;
 use rand::Rng;
+use std::cell::RefMut;
 
 use crate::maze::{Location, MazeCell, SmartGrid};
 use rand::seq::SliceRandom;
@@ -78,21 +78,25 @@ pub fn sidewinder(grid: SmartGrid) -> SmartGrid {
     grid
 }
 
-
 pub fn aldous_broder(grid: SmartGrid) -> SmartGrid {
     // no idea count needs the -1...but it does
     let mut unvisited_count = grid.columns * grid.columns - 1;
-    let random_row = rand::thread_rng().gen_range(0..=grid.rows -1);
-    let random_column = rand::thread_rng().gen_range(0..=grid.columns -1);
+    let random_row = rand::thread_rng().gen_range(0..=grid.rows - 1);
+    let random_column = rand::thread_rng().gen_range(0..=grid.columns - 1);
     let mut current_cell = &grid.cells[random_row][random_column];
     while unvisited_count > 0 {
-
         let neighbours = current_cell.borrow().get_neighbours();
         let random_neighbour_location = neighbours.choose(&mut rand::thread_rng()).unwrap();
-        let mut random_neighbour = &grid.cells[random_neighbour_location.row][random_neighbour_location.column];
+        let mut random_neighbour =
+            &grid.cells[random_neighbour_location.row][random_neighbour_location.column];
 
         if random_neighbour.borrow().is_unlinked() {
-            SmartGrid::link_cells(&grid, &mut current_cell.borrow_mut(), *random_neighbour_location, BIDI);
+            SmartGrid::link_cells(
+                &grid,
+                &mut current_cell.borrow_mut(),
+                *random_neighbour_location,
+                BIDI,
+            );
             unvisited_count -= 1;
         }
         current_cell = random_neighbour;
