@@ -38,14 +38,15 @@ impl MazeCell {
             ..Default::default()
         }
     }
-    pub fn no_links(&self) -> bool {
-        return if self.links.is_empty() {
-            false
-        } else {
-            true
-        }
+    pub fn get_neighbours(&self) -> Vec<Location>{
+        let neighbours = vec![self.north, self.east, self.south, self.west];
+        let filtered_neighbours = neighbours.into_iter().filter(|n| n.is_some()).map(|i| i.unwrap()).collect::<Vec<_>>();
+        filtered_neighbours
     }
-    pub fn is_linked(&self, direction: Direction) -> bool {
+    pub fn is_unlinked(&self) -> bool {
+        self.links.is_empty()
+    }
+    pub fn is_linked_to(&self, direction: Direction) -> bool {
         if self.links.is_empty() {
             return false;
         }
@@ -141,7 +142,7 @@ impl SmartGrid {
     }
     pub fn link_cells(
         &self,
-        mut source: RefMut<MazeCell>,
+        source: &mut RefMut<MazeCell>,
         target: Location,
         is_bidirectional: bool,
     ) {
@@ -189,7 +190,7 @@ pub fn cli_display(grid: &SmartGrid) {
             // let distance = cell.borrow().distance;
             // let body = format!(" {} ", distance);
             let body = "   ";
-            let east_boundary = if MazeCell::is_linked(&cell.borrow(), Direction::East) {
+            let east_boundary = if MazeCell::is_linked_to(&cell.borrow(), Direction::East) {
                 " "
             } else {
                 "|"
@@ -197,7 +198,7 @@ pub fn cli_display(grid: &SmartGrid) {
 
             top.push_str((body.to_owned() + east_boundary).as_str());
 
-            let south_boundary = if MazeCell::is_linked(&cell.borrow(), Direction::South) {
+            let south_boundary = if MazeCell::is_linked_to(&cell.borrow(), Direction::South) {
                 "   "
             } else {
                 "---"

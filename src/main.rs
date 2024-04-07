@@ -1,4 +1,3 @@
-use log::debug;
 // extern crate nannou;
 // extern crate nannou_egui;
 // extern crate rand;
@@ -48,7 +47,7 @@ mod sidewinder_hardcoded;
 // }
 //
 fn main() {
-    let grid = prepare_grid(2, 2);
+    let grid = prepare_grid(4, 4);
     // println!("{:?}", grid);
     // let maze = binary_tree(grid);
     let maze = aldous_broder(grid);
