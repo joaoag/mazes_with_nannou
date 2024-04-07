@@ -98,23 +98,22 @@ pub fn aldous_broder(grid: SmartGrid) -> SmartGrid {
     let random_row = rand::thread_rng().gen_range(0..=grid.rows -1);
     let random_column = rand::thread_rng().gen_range(0..=grid.columns -1);
 
-
+    let mut current_cell = &grid.cells[random_row][random_column];
     while unvisited_count > 0 {
-        let mut current_cell = grid.cells[random_row][random_column].borrow_mut();
 
-        println!("current_cell initial assignment: {:?}", &current_cell.location);
-        let neighbours = vec![current_cell.north, current_cell.east, current_cell.south, current_cell.west];
-        let filtered_neighbours = neighbours.into_iter().filter(|n| n.is_some()).map(|i| i.unwrap()).collect::<Vec<_>>();
-        let random_neighbour_location = filtered_neighbours.choose(&mut rand::thread_rng()).unwrap();
+        println!("current_cell: {:?}", &current_cell);
+        let neighbours = current_cell.borrow().get_neighbours();
+        // println!("neighbours {:?}", &neighbours);
+        let random_neighbour_location = neighbours.choose(&mut rand::thread_rng()).unwrap();
 
         let mut random_neighbour = &grid.cells[random_neighbour_location.row][random_neighbour_location.column];
-        let unlinked = random_neighbour.clone().take().is_unlinked();
+        println!("random_neighbour: {:?}", &random_neighbour);
 
-        if unlinked {
-            SmartGrid::link_cells(&grid, &mut current_cell, *random_neighbour_location, BIDI);
+        if random_neighbour.borrow().is_unlinked() {
+            SmartGrid::link_cells(&grid, &mut current_cell.borrow_mut(), *random_neighbour_location, BIDI);
             unvisited_count -= 1;
         }
-        current_cell = random_neighbour.borrow_mut();
+        current_cell = random_neighbour;
     }
     grid
 }
