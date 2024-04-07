@@ -80,34 +80,16 @@ pub fn sidewinder(grid: SmartGrid) -> SmartGrid {
 
 
 pub fn aldous_broder(grid: SmartGrid) -> SmartGrid {
-// pick a cell at random (walk_root)
-// mark it as visited
-// pick random neighbour (walk_neighbour)
-// has this cell been visited?
-// if yes:
-//   make walk_neighbour walk_root
-// if no:
-//   mark it as visited && linked to walk_root
-//   make walk_neighbour walk_root
-// and process starts again
-// continue until each cell is visited
-
-    let mut unvisited_count = grid.columns * 2; // when this is 0, return grid
-
-    // declare starting position
+    // no idea count needs the -1...but it does
+    let mut unvisited_count = grid.columns * grid.columns - 1;
     let random_row = rand::thread_rng().gen_range(0..=grid.rows -1);
     let random_column = rand::thread_rng().gen_range(0..=grid.columns -1);
-
     let mut current_cell = &grid.cells[random_row][random_column];
     while unvisited_count > 0 {
 
-        println!("current_cell: {:?}", &current_cell);
         let neighbours = current_cell.borrow().get_neighbours();
-        // println!("neighbours {:?}", &neighbours);
         let random_neighbour_location = neighbours.choose(&mut rand::thread_rng()).unwrap();
-
         let mut random_neighbour = &grid.cells[random_neighbour_location.row][random_neighbour_location.column];
-        println!("random_neighbour: {:?}", &random_neighbour);
 
         if random_neighbour.borrow().is_unlinked() {
             SmartGrid::link_cells(&grid, &mut current_cell.borrow_mut(), *random_neighbour_location, BIDI);
