@@ -78,7 +78,7 @@ pub fn sidewinder(grid: SmartGrid) -> SmartGrid {
 }
 
 pub fn aldous_broder(grid: SmartGrid) -> SmartGrid {
-    // no idea count needs the -1...but it does
+    // no idea why count needs the -1...but it does
     let mut unvisited_count = grid.columns * grid.columns - 1;
     let random_row = rand::thread_rng().gen_range(0..=grid.rows - 1);
     let random_column = rand::thread_rng().gen_range(0..=grid.columns - 1);
