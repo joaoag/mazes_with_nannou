@@ -32,4 +32,5 @@ Steps for running locally:
   * wall thickness controls
   * wall colour controls
 * Restructure project to make it more idiomatic, misc. code tidying e.g. removing unused code
+* Allow `cli_display()` to be triggered from the command line, update docs accordingly
 * Address bugs that happen when width is set to more than one greater value than height
