@@ -1,7 +1,6 @@
 use rand::Rng;
-use std::cell::RefMut;
 
-use crate::maze::{Location, MazeCell, SmartGrid};
+use crate::maze::{Location, SmartGrid};
 use rand::seq::SliceRandom;
 
 const BIDI: bool = true;
