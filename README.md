@@ -31,6 +31,7 @@ Steps for running locally:
   * other maze-making algorithms
   * wall thickness controls
   * wall colour controls
+* See if on saving the image the widget can disappear for a cycle
 * Restructure project to make it more idiomatic, misc. code tidying e.g. removing unused code
 * Allow `cli_display()` to be triggered from the command line, update docs accordingly
 * Address bugs that happen when width is set to more than one greater value than height
