@@ -18,7 +18,7 @@ mod sidewinder_hardcoded;
 
 struct Settings {
     generate: bool,
-    save: bool,
+    saving: bool,
     algo: Algos,
     height: f64,
     width: f64,
@@ -65,7 +65,7 @@ fn model(app: &App) -> Model {
     let rows = 15;
     let settings = Settings {
         generate: false,
-        save: false,
+        saving: false,
         algo: Algos::BinaryTree,
         height: 15.0,
         width: 15.0,
@@ -109,7 +109,7 @@ fn update(_app: &App, model: &mut Model, update: Update) {
 
     egui::Window::new("Maze Maker").show(&ctx, |ui| {
         settings.generate = ui.button("Generate!").clicked();
-        settings.save = ui.button("Save my maze!").clicked();
+        settings.saving = ui.button("Save my maze!").clicked();
 
         ui.separator();
 
@@ -164,10 +164,12 @@ fn view(app: &App, model: &Model, frame: Frame) {
     draw_maze(&model, &draw);
 
     draw.to_frame(app, &frame).unwrap();
-    model.egui.draw_to_frame(&frame).unwrap();
-    if model.settings.save {
+
+    if model.settings.saving {
         let file_path = captured_frame_path(app, &frame);
         app.main_window().capture_frame(file_path);
+    } else {
+        model.egui.draw_to_frame(&frame).unwrap();
     }
 }
 
