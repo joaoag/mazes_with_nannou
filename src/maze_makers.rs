@@ -77,12 +77,19 @@ pub fn sidewinder(grid: SmartGrid) -> SmartGrid {
     grid
 }
 
+pub fn random_cell_location(grid: &SmartGrid) -> Location {
+    let row = rand::thread_rng().gen_range(0..=grid.rows - 1);
+    let column = rand::thread_rng().gen_range(0..=grid.columns - 1);
+    Location{row, column}
+}
+
 pub fn aldous_broder(grid: SmartGrid) -> SmartGrid {
     // no idea why count needs the -1...but it does
     let mut unvisited_count = grid.columns * grid.columns - 1;
-    let random_row = rand::thread_rng().gen_range(0..=grid.rows - 1);
-    let random_column = rand::thread_rng().gen_range(0..=grid.columns - 1);
-    let mut current_cell = &grid.cells[random_row][random_column];
+    // let random_row = rand::thread_rng().gen_range(0..=grid.rows - 1);
+    // let random_column = rand::thread_rng().gen_range(0..=grid.columns - 1);
+    let location = random_cell_location(&grid);
+    let mut current_cell = &grid.cells[location.row][location.column];
     while unvisited_count > 0 {
         let neighbours = current_cell.borrow().get_neighbours();
         let random_neighbour_location = neighbours.choose(&mut rand::thread_rng()).unwrap();
@@ -102,3 +109,7 @@ pub fn aldous_broder(grid: SmartGrid) -> SmartGrid {
     }
     grid
 }
+
+// pub fn hunt_and_kill(grid: SmartGrid) -> SmartGrid {
+//
+// }
