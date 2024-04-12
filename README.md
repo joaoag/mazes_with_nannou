@@ -27,6 +27,7 @@ Steps for running locally:
 
 
 ## To Do
+* Implement Hunt-and-Kill and Recursive Backtracker algorithms
 * Add:
   * other maze-making algorithms
   * wall thickness controls
