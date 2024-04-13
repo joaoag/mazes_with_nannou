@@ -10,6 +10,7 @@ use crate::maze::cli_display;
 use maze::SmartGrid;
 use maze::{Direction, MazeCell};
 use maze_makers::{aldous_broder, binary_tree, sidewinder};
+use crate::maze_makers::hunt_and_kill;
 
 mod constants;
 mod maze;
@@ -34,6 +35,7 @@ enum Algos {
     BinaryTree,
     Sidewinder,
     AldousBroder,
+    HuntAndKill,
 }
 struct Model {
     pub settings: Settings,
@@ -126,6 +128,7 @@ fn update(_app: &App, model: &mut Model, update: Update) {
             ui.radio_value(&mut settings.algo, Algos::BinaryTree, "Binary tree");
             ui.radio_value(&mut settings.algo, Algos::Sidewinder, "Sidewinder");
             ui.radio_value(&mut settings.algo, Algos::AldousBroder, "Aldous-Broder");
+            ui.radio_value(&mut settings.algo, Algos::HuntAndKill, "Hunt-and-kill");
         });
     });
 
@@ -146,7 +149,8 @@ fn generate_maze(base_grid: SmartGrid, algorithm: &Algos) -> SmartGrid {
     let selected_algorithm = match algorithm {
         Algos::BinaryTree => binary_tree,
         Algos::Sidewinder => sidewinder,
-        Algos::AldousBroder => aldous_broder
+        Algos::AldousBroder => aldous_broder,
+        Algos::HuntAndKill => hunt_and_kill
     };
     selected_algorithm(base_grid)
 }

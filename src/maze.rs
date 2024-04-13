@@ -48,6 +48,10 @@ impl MazeCell {
     pub fn is_unlinked(&self) -> bool {
         self.links.is_empty()
     }
+
+    pub fn is_linked(&self) -> bool {
+        !self.links.is_empty()
+    }
     pub fn is_linked_to(&self, direction: Direction) -> bool {
         if self.links.is_empty() {
             return false;
