@@ -1,7 +1,7 @@
-use std::cell::Ref;
-use rand::{random, Rng};
 
-use crate::maze::{Location, MazeCell, SmartGrid};
+use rand::{Rng};
+
+use crate::maze::{Location, SmartGrid};
 use rand::seq::SliceRandom;
 
 const BIDI: bool = true;
@@ -114,7 +114,7 @@ fn get_unvisited_neighbours(neighbours: Vec<Location>, grid: &SmartGrid) -> Vec<
     for location in neighbours {
         let cell = grid.cells[location.row][location.column].borrow();
         if cell.is_unlinked() {
-          unvisited.push(cell.location.clone())
+          unvisited.push(cell.location)
         }
     }
     unvisited
@@ -125,7 +125,7 @@ fn get_visited_neighbours(neighbours: Vec<Location>, grid: &SmartGrid) -> Vec<Lo
     for location in neighbours {
         let cell = grid.cells[location.row][location.column].borrow();
         if cell.is_linked() {
-            visited.push(cell.location.clone())
+            visited.push(cell.location)
         }
     }
     visited

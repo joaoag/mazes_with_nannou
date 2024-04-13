@@ -6,7 +6,7 @@ use nannou::prelude::pt2;
 use nannou::prelude::*;
 use nannou_egui::{egui, Egui};
 
-use crate::maze::cli_display;
+
 use maze::SmartGrid;
 use maze::{Direction, MazeCell};
 use maze_makers::{aldous_broder, binary_tree, sidewinder};
