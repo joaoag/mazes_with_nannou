@@ -1,5 +1,4 @@
-
-use rand::{Rng};
+use rand::Rng;
 
 use crate::maze::{Location, SmartGrid};
 use rand::seq::SliceRandom;
@@ -81,7 +80,7 @@ pub fn sidewinder(grid: SmartGrid) -> SmartGrid {
 fn random_cell_location(grid: &SmartGrid) -> Location {
     let row = rand::thread_rng().gen_range(0..=grid.rows - 1);
     let column = rand::thread_rng().gen_range(0..=grid.columns - 1);
-    Location{row, column}
+    Location { row, column }
 }
 
 pub fn aldous_broder(grid: SmartGrid) -> SmartGrid {
@@ -109,18 +108,18 @@ pub fn aldous_broder(grid: SmartGrid) -> SmartGrid {
     grid
 }
 
-fn get_unvisited_neighbours(neighbours: Vec<Location>, grid: &SmartGrid) -> Vec<Location>{
+fn get_unvisited_neighbours(neighbours: Vec<Location>, grid: &SmartGrid) -> Vec<Location> {
     let mut unvisited = vec![];
     for location in neighbours {
         let cell = grid.cells[location.row][location.column].borrow();
         if cell.is_unlinked() {
-          unvisited.push(cell.location)
+            unvisited.push(cell.location)
         }
     }
     unvisited
 }
 
-fn get_visited_neighbours(neighbours: Vec<Location>, grid: &SmartGrid) -> Vec<Location>{
+fn get_visited_neighbours(neighbours: Vec<Location>, grid: &SmartGrid) -> Vec<Location> {
     let mut visited = vec![];
     for location in neighbours {
         let cell = grid.cells[location.row][location.column].borrow();
@@ -137,9 +136,12 @@ pub fn hunt_and_kill(grid: SmartGrid) -> SmartGrid {
     let mut current_cell = &grid.cells[location.row][location.column];
 
     while hunting {
-        let unvisited_neighbours = get_unvisited_neighbours(current_cell.borrow().get_neighbours(), &grid);
+        let unvisited_neighbours =
+            get_unvisited_neighbours(current_cell.borrow().get_neighbours(), &grid);
         if !unvisited_neighbours.is_empty() {
-            let random_neighbour_location = unvisited_neighbours.choose(&mut rand::thread_rng()).unwrap();
+            let random_neighbour_location = unvisited_neighbours
+                .choose(&mut rand::thread_rng())
+                .unwrap();
             let random_neighbour =
                 &grid.cells[random_neighbour_location.row][random_neighbour_location.column];
             SmartGrid::link_cells(
@@ -153,17 +155,22 @@ pub fn hunt_and_kill(grid: SmartGrid) -> SmartGrid {
             hunting = false;
             for row in &grid.cells {
                 for cell in row {
-                    let visited_neighbours = get_visited_neighbours(cell.borrow().get_neighbours(), &grid);
+                    let visited_neighbours =
+                        get_visited_neighbours(cell.borrow().get_neighbours(), &grid);
                     if cell.borrow().is_unlinked() && !visited_neighbours.is_empty() {
                         hunting = true;
                         current_cell = cell;
-                        let random_neighbour_location = visited_neighbours.choose(&mut rand::thread_rng()).unwrap();
-                        SmartGrid::link_cells(&grid, &mut current_cell.borrow_mut(), *random_neighbour_location, BIDI);
-                        break
+                        let random_neighbour_location =
+                            visited_neighbours.choose(&mut rand::thread_rng()).unwrap();
+                        SmartGrid::link_cells(
+                            &grid,
+                            &mut current_cell.borrow_mut(),
+                            *random_neighbour_location,
+                            BIDI,
+                        );
+                        break;
                     }
-
                 }
-
             }
         }
     }

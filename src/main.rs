@@ -6,11 +6,10 @@ use nannou::prelude::pt2;
 use nannou::prelude::*;
 use nannou_egui::{egui, Egui};
 
-
+use crate::maze_makers::hunt_and_kill;
 use maze::SmartGrid;
 use maze::{Direction, MazeCell};
 use maze_makers::{aldous_broder, binary_tree, sidewinder};
-use crate::maze_makers::hunt_and_kill;
 
 mod constants;
 mod maze;
@@ -48,7 +47,6 @@ struct Model {
 fn main() {
     nannou::app(model).update(update).run();
 }
-
 
 fn prepare_grid(columns: usize, rows: usize) -> SmartGrid {
     let mut grid = SmartGrid {
@@ -150,7 +148,7 @@ fn generate_maze(base_grid: SmartGrid, algorithm: &Algos) -> SmartGrid {
         Algos::BinaryTree => binary_tree,
         Algos::Sidewinder => sidewinder,
         Algos::AldousBroder => aldous_broder,
-        Algos::HuntAndKill => hunt_and_kill
+        Algos::HuntAndKill => hunt_and_kill,
     };
     selected_algorithm(base_grid)
 }
