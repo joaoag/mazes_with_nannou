@@ -16,15 +16,15 @@ Steps for running locally:
 
 ### User guide
 
-| Button                                       | Behaviour                                                                                                        |
-|----------------------------------------------|------------------------------------------------------------------------------------------------------------------|
-| `Generate new maze`                          | creates a maze, using the current settings from the UI                                                           |
-| `Save my maze`                               | exports a png of the generated maze to a `mazes_with_nannou` sub-directory in the project                        |
-| `Solve!`                                     | increases blue intensity the further a route extends from the top left cell, illustrating paths through the maze |
-| `Height`                                     | sets the number of walls on the vertical axis                                                                    |
-| `Width`                                      | sets the number of walls on the horizontal axis                                                                  |
-| `Corrider size`                              | sets the size of the empty space between the walls                                                               |
-| `Binary tree`, `Sidewinder`, `Aldous-Broder` | the three maze-making algorithms currently available                                                             |
+| Button                                            | Behaviour                                                                                                        |
+|---------------------------------------------------|------------------------------------------------------------------------------------------------------------------|
+| `Generate new maze`                               | creates a maze, using the current settings from the UI                                                           |
+| `Save my maze`                                    | exports a png of the generated maze to a `mazes_with_nannou` sub-directory in the project                        |
+| `Solve!`                                          | increases blue intensity the further a route extends from the top left cell, illustrating paths through the maze |
+| `Height`                                          | sets the number of walls on the vertical axis                                                                    |
+| `Width`                                           | sets the number of walls on the horizontal axis                                                                  |
+| `Corrider size`                                   | sets the size of the empty space between the walls                                                               |
+| `Binary tree`, `Sidewinder`, `Aldous-Broder` etc. | different maze-making algorithms                                                                                 |
 
 
 ## To Do
