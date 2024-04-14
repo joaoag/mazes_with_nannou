@@ -217,7 +217,7 @@ fn draw_maze(model: &&Model, draw: &Draw) {
             let draw_south = !MazeCell::is_linked_to(&cell, Direction::South);
             let distance = cell.distance as f32;
             if is_solved {
-                draw.quad().rgb8(1, 2, (distance * 1.5) as u8).points(
+                draw.quad().rgb8(1, 2, ((distance + 1.0) * 2.0) as u8).points(
                     north_west_point,
                     north_east_point,
                     south_east_point,
