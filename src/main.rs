@@ -2,9 +2,11 @@ extern crate nannou;
 extern crate nannou_egui;
 extern crate rand;
 
+use nannou::color::named::*;
 use nannou::prelude::pt2;
 use nannou::prelude::*;
 use nannou_egui::{egui, Egui};
+use std::collections::HashMap;
 
 use maze::SmartGrid;
 use maze::{Direction, MazeCell};
@@ -130,6 +132,9 @@ fn update(_app: &App, model: &mut Model, update: Update) {
             ui.add(egui::Slider::new(&mut settings.density, 0.1..=100.0));
 
             ui.separator();
+            let is_party =
+
+            ui.separator();
             ui.vertical(|ui| {
                 ui.radio_value(&mut settings.algo, Algos::BinaryTree, "Binary tree");
                 ui.radio_value(&mut settings.algo, Algos::Sidewinder, "Sidewinder");
@@ -187,6 +192,13 @@ fn view(app: &App, model: &Model, frame: Frame) {
 }
 
 fn draw_maze(model: &&Model, draw: &Draw) {
+    let mut wall_colours = HashMap::from([
+        ("North", RED),
+        ("East", YELLOW),
+        ("South", GREEN),
+        ("West", ORANGE),
+    ]);
+    // let mut random_north: Srgb<u8> = random();
     let is_solved = model.solved_maze.is_some();
     for row in &model.maze.cells {
         for cell in row.iter() {
@@ -231,28 +243,28 @@ fn draw_maze(model: &&Model, draw: &Draw) {
                     .start(north_west_point)
                     .end(north_east_point)
                     .weight(2.0)
-                    .color(RED);
+                    .color(rgb(random::<f32>(), random::<f32>(), random::<f32>()));
             }
             if draw_west {
                 draw.line()
                     .start(north_west_point)
                     .end(south_west_point)
                     .weight(2.0)
-                    .color(ORANGE);
+                    .color(rgb(random::<f32>(), random::<f32>(), random::<f32>()));
             }
             if draw_east {
                 draw.line()
                     .start(north_east_point)
                     .end(south_east_point)
                     .weight(2.0)
-                    .color(YELLOW);
+                    .color(rgb(random::<f32>(), random::<f32>(), random::<f32>()));
             }
             if draw_south {
                 draw.line()
                     .start(south_west_point)
                     .end(south_east_point)
                     .weight(2.0)
-                    .color(GREEN);
+                    .color(rgb(random::<f32>(), random::<f32>(), random::<f32>()));
             }
         }
     }
