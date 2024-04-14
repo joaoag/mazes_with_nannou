@@ -118,7 +118,6 @@ fn update(_app: &App, model: &mut Model, update: Update) {
         settings.solve = ui.button("Solve!").clicked();
 
         ui.separator();
-
         ui.label("Height:");
         ui.add(egui::Slider::new(&mut settings.height, 2.0..=20.0));
 
@@ -128,13 +127,17 @@ fn update(_app: &App, model: &mut Model, update: Update) {
         ui.label("Corridor size");
         ui.add(egui::Slider::new(&mut settings.density, 0.1..=100.0));
 
-        ui.horizontal(|ui| {
+        ui.separator();
+        ui.vertical(|ui| {
             ui.radio_value(&mut settings.algo, Algos::BinaryTree, "Binary tree");
             ui.radio_value(&mut settings.algo, Algos::Sidewinder, "Sidewinder");
             ui.radio_value(&mut settings.algo, Algos::AldousBroder, "Aldous-Broder");
             ui.radio_value(&mut settings.algo, Algos::HuntAndKill, "Hunt-and-kill");
         });
+
     });
+
+
 
     if settings.generate {
         model.cell_size = settings.density;
