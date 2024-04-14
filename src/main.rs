@@ -8,14 +8,14 @@ use nannou_egui::{egui, Egui};
 
 use maze::SmartGrid;
 use maze::{Direction, MazeCell};
-use maze_makers::{aldous_broder, binary_tree, sidewinder, hunt_and_kill};
+use maze_makers::{aldous_broder, binary_tree, hunt_and_kill, sidewinder};
 use maze_solvers::dijkstra_simplified_solver;
 
 mod constants;
 mod maze;
 mod maze_makers;
-mod sidewinder_hardcoded;
 mod maze_solvers;
+mod sidewinder_hardcoded;
 
 #[derive(Debug)]
 struct Settings {
@@ -186,7 +186,7 @@ fn view(app: &App, model: &Model, frame: Frame) {
 }
 
 fn draw_maze(model: &&Model, draw: &Draw) {
-    let is_solved  = model.solved_maze.is_some();
+    let is_solved = model.solved_maze.is_some();
     for row in &model.maze.cells {
         for cell in row.iter() {
             let cell = cell.borrow_mut();
@@ -215,9 +215,12 @@ fn draw_maze(model: &&Model, draw: &Draw) {
             let draw_south = !MazeCell::is_linked_to(&cell, Direction::South);
             let distance = cell.distance as f32;
             if is_solved {
-                draw.quad()
-                    .rgb8(1, 2, (distance * 1.5) as u8)
-                    .points(north_west_point, north_east_point, south_east_point, south_west_point);
+                draw.quad().rgb8(1, 2, (distance * 1.5) as u8).points(
+                    north_west_point,
+                    north_east_point,
+                    south_east_point,
+                    south_west_point,
+                );
             }
 
             if draw_north {
