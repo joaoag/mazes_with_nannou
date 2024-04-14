@@ -9,15 +9,19 @@ use nannou_egui::{egui, Egui};
 use maze::SmartGrid;
 use maze::{Direction, MazeCell};
 use maze_makers::{aldous_broder, binary_tree, sidewinder, hunt_and_kill};
+use maze_solvers::dijkstra_simplified_solver;
 
 mod constants;
 mod maze;
 mod maze_makers;
 mod sidewinder_hardcoded;
+mod maze_solvers;
 
+#[derive(Debug)]
 struct Settings {
     generate: bool,
     saving: bool,
+    solve: bool,
     algo: Algos,
     height: f64,
     width: f64,
@@ -39,6 +43,7 @@ struct Model {
     pub settings: Settings,
     pub egui: Egui,
     pub maze: SmartGrid,
+    pub solved_maze: Option<SmartGrid>,
     pub origin: Point,
     pub cell_size: f32,
 }
@@ -69,6 +74,7 @@ fn model(app: &App) -> Model {
         height: 15.0,
         width: 15.0,
         density: cell_size,
+        solve: false,
     };
 
     let window_id = app
@@ -87,10 +93,12 @@ fn model(app: &App) -> Model {
 
     let grid = prepare_grid(columns, rows);
     let maze = binary_tree(grid);
+    let solved_maze = None;
     Model {
         settings,
         egui,
         maze,
+        solved_maze,
         origin,
         cell_size,
     }
@@ -102,13 +110,13 @@ fn update(_app: &App, model: &mut Model, update: Update) {
         ref mut settings,
         ..
     } = *model;
-
     egui.set_elapsed_time(update.since_start);
     let ctx = egui.begin_frame();
 
     egui::Window::new("Maze Maker").show(&ctx, |ui| {
-        settings.generate = ui.button("Generate!").clicked();
-        settings.saving = ui.button("Save my maze!").clicked();
+        settings.generate = ui.button("Generate new maze").clicked();
+        settings.saving = ui.button("Save my maze").clicked();
+        settings.solve = ui.button("Solve!").clicked();
 
         ui.separator();
 
@@ -140,6 +148,9 @@ fn update(_app: &App, model: &mut Model, update: Update) {
         model.origin = Point { x, y };
 
         model.maze = generate_maze(base_grid, &settings.algo)
+    }
+    if settings.solve {
+        model.solved_maze = Some(dijkstra_simplified_solver(model.maze.clone()))
     }
 }
 fn generate_maze(base_grid: SmartGrid, algorithm: &Algos) -> SmartGrid {
@@ -175,6 +186,7 @@ fn view(app: &App, model: &Model, frame: Frame) {
 }
 
 fn draw_maze(model: &&Model, draw: &Draw) {
+    let is_solved  = model.solved_maze.is_some();
     for row in &model.maze.cells {
         for cell in row.iter() {
             let cell = cell.borrow_mut();
@@ -201,6 +213,12 @@ fn draw_maze(model: &&Model, draw: &Draw) {
             let draw_west = cell.west.is_none();
             let draw_east = !MazeCell::is_linked_to(&cell, Direction::East);
             let draw_south = !MazeCell::is_linked_to(&cell, Direction::South);
+            let distance = cell.distance as f32;
+            if is_solved {
+                draw.quad()
+                    .rgb8(1, 2, (distance * 1.5) as u8)
+                    .points(north_west_point, north_east_point, south_east_point, south_west_point);
+            }
 
             if draw_north {
                 draw.line()
