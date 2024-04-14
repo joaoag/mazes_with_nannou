@@ -11,7 +11,6 @@ use maze::{Direction, MazeCell};
 use maze_makers::{aldous_broder, binary_tree, hunt_and_kill, sidewinder};
 use maze_solvers::dijkstra_simplified_solver;
 
-mod constants;
 mod maze;
 mod maze_makers;
 mod maze_solvers;
