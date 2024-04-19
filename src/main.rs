@@ -23,10 +23,17 @@ struct Settings {
     generate: bool,
     saving: bool,
     solve: bool,
+    colour_type: ColourType,
     algo: Algos,
     height: f64,
     width: f64,
     density: f32,
+}
+#[derive(PartialEq, Debug)]
+enum ColourType {
+    Party,
+    Default,
+    Custom,
 }
 
 struct Point {
@@ -76,6 +83,7 @@ fn model(app: &App) -> Model {
         width: 15.0,
         density: cell_size,
         solve: false,
+        colour_type: ColourType::Default,
     };
 
     let window_id = app
@@ -132,7 +140,12 @@ fn update(_app: &App, model: &mut Model, update: Update) {
             ui.add(egui::Slider::new(&mut settings.density, 0.1..=100.0));
 
             ui.separator();
-            let is_party =
+            ui.label("Colours");
+
+            ui.vertical(|ui| {
+                ui.radio_value(&mut settings.colour_type, ColourType::Default, "Default");
+                ui.radio_value(&mut settings.colour_type, ColourType::Party, "Party!");
+            });
 
             ui.separator();
             ui.vertical(|ui| {
@@ -192,13 +205,38 @@ fn view(app: &App, model: &Model, frame: Frame) {
 }
 
 fn draw_maze(model: &&Model, draw: &Draw) {
-    let mut wall_colours = HashMap::from([
-        ("North", RED),
-        ("East", YELLOW),
-        ("South", GREEN),
-        ("West", ORANGE),
-    ]);
-    // let mut random_north: Srgb<u8> = random();
+    let party_colours = || rgb(random::<u8>(), random::<u8>(), random::<u8>());
+    let north_default = || rgb8(255u8, 0u8, 0u8);
+    let east_default = || rgb8(255u8, 255u8, 0u8);
+    let south_default = || rgb8(0u8, 128u8, 0u8);
+    let west_default = || rgb8(255u8, 165u8, 0u8);
+
+    let mut is_party: bool;
+    if let ColourType::Party = model.settings.colour_type {
+        is_party = true;
+    } else {
+        is_party = false;
+    };
+    let north_colour = if is_party {
+        party_colours
+    } else {
+        north_default
+    };
+    let east_colour = if is_party {
+        party_colours
+    } else {
+        east_default
+    };
+    let south_colour = if is_party {
+        party_colours
+    } else {
+        south_default
+    };
+    let west_colour = if is_party {
+        party_colours
+    } else {
+        west_default
+    };
     let is_solved = model.solved_maze.is_some();
     for row in &model.maze.cells {
         for cell in row.iter() {
@@ -243,28 +281,28 @@ fn draw_maze(model: &&Model, draw: &Draw) {
                     .start(north_west_point)
                     .end(north_east_point)
                     .weight(2.0)
-                    .color(rgb(random::<f32>(), random::<f32>(), random::<f32>()));
+                    .color(north_colour());
             }
             if draw_west {
                 draw.line()
                     .start(north_west_point)
                     .end(south_west_point)
                     .weight(2.0)
-                    .color(rgb(random::<f32>(), random::<f32>(), random::<f32>()));
+                    .color(west_colour());
             }
             if draw_east {
                 draw.line()
                     .start(north_east_point)
                     .end(south_east_point)
                     .weight(2.0)
-                    .color(rgb(random::<f32>(), random::<f32>(), random::<f32>()));
+                    .color(east_colour());
             }
             if draw_south {
                 draw.line()
                     .start(south_west_point)
                     .end(south_east_point)
                     .weight(2.0)
-                    .color(rgb(random::<f32>(), random::<f32>(), random::<f32>()));
+                    .color(south_colour());
             }
         }
     }
