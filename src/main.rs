@@ -6,7 +6,6 @@ use nannou::color::named::*;
 use nannou::prelude::pt2;
 use nannou::prelude::*;
 use nannou_egui::{egui, Egui};
-use std::collections::HashMap;
 
 use maze::SmartGrid;
 use maze::{Direction, MazeCell};
@@ -211,7 +210,7 @@ fn draw_maze(model: &&Model, draw: &Draw) {
     let south_default = || rgb8(0u8, 128u8, 0u8);
     let west_default = || rgb8(255u8, 165u8, 0u8);
 
-    let mut is_party: bool;
+    let is_party: bool;
     if let ColourType::Party = model.settings.colour_type {
         is_party = true;
     } else {
