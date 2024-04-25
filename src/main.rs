@@ -6,6 +6,10 @@ use nannou::color::named::*;
 use nannou::prelude::pt2;
 use nannou::prelude::*;
 use nannou_egui::{egui, Egui};
+use nannou_egui::color_picker::Alpha;
+use nannou_egui::egui::Rgba;
+use rand::distributions::uniform::SampleBorrow;
+
 
 use maze::SmartGrid;
 use maze::{Direction, MazeCell};
@@ -23,12 +27,30 @@ struct Settings {
     saving: bool,
     solve: bool,
     colour_type: ColourType,
+    wall_colours: WallColours,
     algo: Algos,
     height: f64,
     width: f64,
     density: f32,
 }
 #[derive(PartialEq, Debug)]
+struct WallColours {
+    north: Rgb8,
+    east: Rgb8,
+    south: Rgb8,
+    west: Rgb8
+}
+impl Default for WallColours {
+    fn default() -> Self {
+        WallColours {
+            north: Default::default(),
+            east: Default::default(),
+            south: Default::default(),
+            west: Default::default(),
+        }
+    }
+}
+#[derive(PartialEq, Debug, Clone, Copy)]
 enum ColourType {
     Party,
     Default,
@@ -83,6 +105,7 @@ fn model(app: &App) -> Model {
         density: cell_size,
         solve: false,
         colour_type: ColourType::Default,
+        wall_colours: Default::default()
     };
 
     let window_id = app
@@ -144,7 +167,19 @@ fn update(_app: &App, model: &mut Model, update: Update) {
             ui.vertical(|ui| {
                 ui.radio_value(&mut settings.colour_type, ColourType::Default, "Default");
                 ui.radio_value(&mut settings.colour_type, ColourType::Party, "Party!");
+                ui.radio_value(&mut settings.colour_type, ColourType::Custom, "Custom");
             });
+            if let ColourType::Custom = settings.colour_type {
+                ui.label("North");
+                edit_rgb(ui, &mut settings.wall_colours.north);
+                ui.label("East");
+                edit_rgb(ui, &mut settings.wall_colours.east);
+                ui.label("South");
+                edit_rgb(ui, &mut settings.wall_colours.south);
+                ui.label("West");
+                edit_rgb(ui, &mut settings.wall_colours.west);
+                // next step, link colour to model/settings
+            }
 
             ui.separator();
             ui.vertical(|ui| {
@@ -170,6 +205,21 @@ fn update(_app: &App, model: &mut Model, update: Update) {
     if settings.solve {
         model.solved_maze = Some(dijkstra_simplified_solver(model.maze.clone()))
     }
+}
+fn edit_rgb(ui: &mut egui::Ui, color: &mut Rgb8) {
+
+    // declare an egui_rgb, created using values from colour arg
+    // pass egui_rgb into the colour picker
+    // if the colour picker changes, and therefore egui_rgb is mutated
+    // re declare colour as equal to the values from egui_rgb
+
+    // let mut egui_rgb = egui::ecolor::Rgba::new(color[0], color[1], color[2]);
+    // // next step, sort out the u8 f32 conversions
+    //
+    // if egui::color_picker::color_edit_button_rgb(ui, &mut egui_rgb).changed(){
+    //    *color = rgb8(egui_rgb[0], egui_rgb[1], egui_rgb[2]);
+    // }
+
 }
 fn generate_maze(base_grid: SmartGrid, algorithm: &Algos) -> SmartGrid {
     let selected_algorithm = match algorithm {
@@ -203,39 +253,61 @@ fn view(app: &App, model: &Model, frame: Frame) {
     }
 }
 
+struct Walls {
+    north: fn()->Rgb8,
+    east: fn()->Rgb8,
+    south: fn()->Rgb8,
+    west: fn()->Rgb8
+}
+
 fn draw_maze(model: &&Model, draw: &Draw) {
-    let party_colours = || rgb(random::<u8>(), random::<u8>(), random::<u8>());
+    // three options
+    // 1. default
+    // 2. party
+    // 3. custom
+    // each returns the colours for the walls
+
+    // match &model.settings.colour_type {
+    // ColourType::Party => n e s w as party colours
+    // ColourType::Default => n e s w as default colours
+    // ColourType::Custom => n e s w take user input colours
+    // }
+
+
+    let party_colours = || rgb8(random::<u8>(), random::<u8>(), random::<u8>());
     let north_default = || rgb8(255u8, 0u8, 0u8);
     let east_default = || rgb8(255u8, 255u8, 0u8);
     let south_default = || rgb8(0u8, 128u8, 0u8);
     let west_default = || rgb8(255u8, 165u8, 0u8);
+    let colour_type = &model.settings.colour_type;
+    let party_walls = Walls{
+        north: party_colours,
+        east: party_colours,
+        south: party_colours,
+        west: party_colours,
+    };
+    let default_walls = Walls{
+        north: north_default,
+        east: east_default,
+        south: south_default,
+        west: west_default,
+    };
+    // let custom_colours = &model.settings.wall_colours;
+    // let custom_north = || &custom_colours.north;
+    // let custom_walls = Walls{
+    //     north: custom_north,
+    //     east:   custom_north,
+    //     south: custom_north,
+    //     west:  custom_north
+    // };
 
-    let is_party: bool;
-    if let ColourType::Party = model.settings.colour_type {
-        is_party = true;
-    } else {
-        is_party = false;
+    let colours = match colour_type {
+        ColourType::Party => party_walls,
+        ColourType::Default => default_walls,
+        ColourType::Custom => default_walls,
+        _ => default_walls
     };
-    let north_colour = if is_party {
-        party_colours
-    } else {
-        north_default
-    };
-    let east_colour = if is_party {
-        party_colours
-    } else {
-        east_default
-    };
-    let south_colour = if is_party {
-        party_colours
-    } else {
-        south_default
-    };
-    let west_colour = if is_party {
-        party_colours
-    } else {
-        west_default
-    };
+
     let is_solved = model.solved_maze.is_some();
     for row in &model.maze.cells {
         for cell in row.iter() {
@@ -280,28 +352,28 @@ fn draw_maze(model: &&Model, draw: &Draw) {
                     .start(north_west_point)
                     .end(north_east_point)
                     .weight(2.0)
-                    .color(north_colour());
+                    .color((colours.north)());
             }
             if draw_west {
                 draw.line()
                     .start(north_west_point)
                     .end(south_west_point)
                     .weight(2.0)
-                    .color(west_colour());
+                    .color((colours.west)());
             }
             if draw_east {
                 draw.line()
                     .start(north_east_point)
                     .end(south_east_point)
                     .weight(2.0)
-                    .color(east_colour());
+                    .color((colours.east)());
             }
             if draw_south {
                 draw.line()
                     .start(south_west_point)
                     .end(south_east_point)
                     .weight(2.0)
-                    .color(south_colour());
+                    .color((colours.south)());
             }
         }
     }
