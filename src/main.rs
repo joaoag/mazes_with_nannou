@@ -5,11 +5,10 @@ extern crate rand;
 use nannou::color::named::*;
 use nannou::prelude::pt2;
 use nannou::prelude::*;
-use nannou_egui::{egui, Egui};
 use nannou_egui::color_picker::Alpha;
 use nannou_egui::egui::Rgba;
+use nannou_egui::{egui, Egui};
 use rand::distributions::uniform::SampleBorrow;
-
 
 use maze::SmartGrid;
 use maze::{Direction, MazeCell};
@@ -38,7 +37,7 @@ struct WallColours {
     north: Rgb8,
     east: Rgb8,
     south: Rgb8,
-    west: Rgb8
+    west: Rgb8,
 }
 impl Default for WallColours {
     fn default() -> Self {
@@ -105,7 +104,7 @@ fn model(app: &App) -> Model {
         density: cell_size,
         solve: false,
         colour_type: ColourType::Default,
-        wall_colours: Default::default()
+        wall_colours: Default::default(),
     };
 
     let window_id = app
@@ -207,19 +206,19 @@ fn update(_app: &App, model: &mut Model, update: Update) {
     }
 }
 fn edit_rgb(ui: &mut egui::Ui, color: &mut Rgb8) {
-
     // declare an egui_rgb, created using values from colour arg
     // pass egui_rgb into the colour picker
     // if the colour picker changes, and therefore egui_rgb is mutated
     // re declare colour as equal to the values from egui_rgb
 
-    // let mut egui_rgb = egui::ecolor::Rgba::new(color[0], color[1], color[2]);
-    // // next step, sort out the u8 f32 conversions
-    //
-    // if egui::color_picker::color_edit_button_rgb(ui, &mut egui_rgb).changed(){
-    //    *color = rgb8(egui_rgb[0], egui_rgb[1], egui_rgb[2]);
-    // }
+    // let mut egui_rgb = [color.red as f32, color.green as f32, color.blue as f32];
+    // next step, sort out the u8 f32 conversions
+    // let mut egui_rgb = Rgba::from_rgb(color.red as f32, color.green as f32, color.blue as f32);
+    let mut egui_rgb = [color.red, color.green, color.blue];
 
+    if egui::color_picker::color_edit_button_srgb(ui, &mut egui_rgb).changed() {
+        *color = rgb8(egui_rgb[0], egui_rgb[1], egui_rgb[2]);
+    }
 }
 fn generate_maze(base_grid: SmartGrid, algorithm: &Algos) -> SmartGrid {
     let selected_algorithm = match algorithm {
@@ -254,10 +253,10 @@ fn view(app: &App, model: &Model, frame: Frame) {
 }
 
 struct Walls {
-    north: fn()->Rgb8,
-    east: fn()->Rgb8,
-    south: fn()->Rgb8,
-    west: fn()->Rgb8
+    north: fn() -> Rgb8,
+    east: fn() -> Rgb8,
+    south: fn() -> Rgb8,
+    west: fn() -> Rgb8,
 }
 
 fn draw_maze(model: &&Model, draw: &Draw) {
@@ -273,20 +272,19 @@ fn draw_maze(model: &&Model, draw: &Draw) {
     // ColourType::Custom => n e s w take user input colours
     // }
 
-
     let party_colours = || rgb8(random::<u8>(), random::<u8>(), random::<u8>());
     let north_default = || rgb8(255u8, 0u8, 0u8);
     let east_default = || rgb8(255u8, 255u8, 0u8);
     let south_default = || rgb8(0u8, 128u8, 0u8);
     let west_default = || rgb8(255u8, 165u8, 0u8);
     let colour_type = &model.settings.colour_type;
-    let party_walls = Walls{
+    let party_walls = Walls {
         north: party_colours,
         east: party_colours,
         south: party_colours,
         west: party_colours,
     };
-    let default_walls = Walls{
+    let default_walls = Walls {
         north: north_default,
         east: east_default,
         south: south_default,
@@ -305,7 +303,7 @@ fn draw_maze(model: &&Model, draw: &Draw) {
         ColourType::Party => party_walls,
         ColourType::Default => default_walls,
         ColourType::Custom => default_walls,
-        _ => default_walls
+        _ => default_walls,
     };
 
     let is_solved = model.solved_maze.is_some();
