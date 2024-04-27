@@ -5,10 +5,7 @@ extern crate rand;
 use nannou::color::named::*;
 use nannou::prelude::pt2;
 use nannou::prelude::*;
-use nannou_egui::color_picker::Alpha;
-use nannou_egui::egui::Rgba;
 use nannou_egui::{egui, Egui};
-use rand::distributions::uniform::SampleBorrow;
 
 use maze::SmartGrid;
 use maze::{Direction, MazeCell};
@@ -32,22 +29,12 @@ struct Settings {
     width: f64,
     density: f32,
 }
-#[derive(PartialEq, Debug)]
+#[derive(PartialEq, Debug, Default)]
 struct WallColours {
     north: Rgb8,
     east: Rgb8,
     south: Rgb8,
     west: Rgb8,
-}
-impl Default for WallColours {
-    fn default() -> Self {
-        WallColours {
-            north: Default::default(),
-            east: Default::default(),
-            south: Default::default(),
-            west: Default::default(),
-        }
-    }
 }
 #[derive(PartialEq, Debug, Clone, Copy)]
 enum ColourType {
@@ -240,7 +227,7 @@ fn view(app: &App, model: &Model, frame: Frame) {
 
     draw.background().color(BLACK);
 
-    draw_maze(&model, &draw);
+    draw_maze(model, &draw);
 
     draw.to_frame(app, &frame).unwrap();
 
@@ -253,31 +240,21 @@ fn view(app: &App, model: &Model, frame: Frame) {
 }
 
 struct Walls {
-    north: fn() -> Rgb8,
-    east: fn() -> Rgb8,
-    south: fn() -> Rgb8,
-    west: fn() -> Rgb8,
+    north: Rgb8,
+    east: Rgb8,
+    south: Rgb8,
+    west: Rgb8,
 }
 
-fn draw_maze(model: &&Model, draw: &Draw) {
-    // three options
-    // 1. default
-    // 2. party
-    // 3. custom
-    // each returns the colours for the walls
+fn draw_maze(model: &Model, draw: &Draw) {
+    let Model { settings, .. } = model;
 
-    // match &model.settings.colour_type {
-    // ColourType::Party => n e s w as party colours
-    // ColourType::Default => n e s w as default colours
-    // ColourType::Custom => n e s w take user input colours
-    // }
-
-    let party_colours = || rgb8(random::<u8>(), random::<u8>(), random::<u8>());
-    let north_default = || rgb8(255u8, 0u8, 0u8);
-    let east_default = || rgb8(255u8, 255u8, 0u8);
-    let south_default = || rgb8(0u8, 128u8, 0u8);
-    let west_default = || rgb8(255u8, 165u8, 0u8);
-    let colour_type = &model.settings.colour_type;
+    let party_colours = rgb8(random::<u8>(), random::<u8>(), random::<u8>());
+    let north_default = rgb8(255u8, 0u8, 0u8);
+    let east_default = rgb8(255u8, 255u8, 0u8);
+    let south_default = rgb8(0u8, 128u8, 0u8);
+    let west_default = rgb8(255u8, 165u8, 0u8);
+    let colour_type = settings.colour_type;
     let party_walls = Walls {
         north: party_colours,
         east: party_colours,
@@ -290,20 +267,19 @@ fn draw_maze(model: &&Model, draw: &Draw) {
         south: south_default,
         west: west_default,
     };
-    // let custom_colours = &model.settings.wall_colours;
-    // let custom_north = || &custom_colours.north;
-    // let custom_walls = Walls{
-    //     north: custom_north,
-    //     east:   custom_north,
-    //     south: custom_north,
-    //     west:  custom_north
-    // };
+
+    let custom_colours = &settings.wall_colours;
+    let custom_walls = Walls {
+        north: custom_colours.north,
+        east: custom_colours.east,
+        south: custom_colours.south,
+        west: custom_colours.west,
+    };
 
     let colours = match colour_type {
         ColourType::Party => party_walls,
         ColourType::Default => default_walls,
-        ColourType::Custom => default_walls,
-        _ => default_walls,
+        ColourType::Custom => custom_walls,
     };
 
     let is_solved = model.solved_maze.is_some();
@@ -350,28 +326,28 @@ fn draw_maze(model: &&Model, draw: &Draw) {
                     .start(north_west_point)
                     .end(north_east_point)
                     .weight(2.0)
-                    .color((colours.north)());
+                    .color(colours.north);
             }
             if draw_west {
                 draw.line()
                     .start(north_west_point)
                     .end(south_west_point)
                     .weight(2.0)
-                    .color((colours.west)());
+                    .color(colours.west);
             }
             if draw_east {
                 draw.line()
                     .start(north_east_point)
                     .end(south_east_point)
                     .weight(2.0)
-                    .color((colours.east)());
+                    .color(colours.east);
             }
             if draw_south {
                 draw.line()
                     .start(south_west_point)
                     .end(south_east_point)
                     .weight(2.0)
-                    .color((colours.south)());
+                    .color(colours.south);
             }
         }
     }
