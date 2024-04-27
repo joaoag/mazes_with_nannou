@@ -34,7 +34,7 @@ impl Default for Settings {
         Settings {
             generate: false,
             saving: false,
-            algo: Algos::BinaryTree,
+            algo: Algos::default(),
             height: 15.0,
             width: 15.0,
             corridor_size: 30.0,
@@ -69,8 +69,9 @@ struct Point {
     pub y: f32,
 }
 type SolvedMaze = Option<SmartGrid>;
-#[derive(PartialEq, Debug, Copy, Clone)]
+#[derive(PartialEq, Debug, Copy, Clone, Default)]
 enum Algos {
+    #[default]
     BinaryTree,
     Sidewinder,
     AldousBroder,
