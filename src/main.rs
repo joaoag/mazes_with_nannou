@@ -27,7 +27,8 @@ struct Settings {
     algo: Algos,
     height: f64,
     width: f64,
-    density: f32,
+    corridor_size: f32,
+    wall_size: f32,
 }
 impl Default for Settings {
     fn default() -> Self {
@@ -37,10 +38,11 @@ impl Default for Settings {
             algo: Algos::BinaryTree,
             height: 15.0,
             width: 15.0,
-            density: 30.0,
+            corridor_size: 30.0,
             solve: false,
             colour_type: ColourType::Default,
             wall_colours: Default::default(),
+            wall_size: 2.0,
         }
     }
 }
@@ -51,6 +53,7 @@ struct WallColours {
     south: Rgb8,
     west: Rgb8,
 }
+
 #[derive(PartialEq, Debug, Clone, Copy)]
 enum ColourType {
     Party,
@@ -62,6 +65,7 @@ struct Point {
     pub x: f32,
     pub y: f32,
 }
+type SolvedMaze = Option<SmartGrid>;
 #[derive(PartialEq, Debug)]
 enum Algos {
     BinaryTree,
@@ -73,7 +77,7 @@ struct Model {
     pub settings: Settings,
     pub egui: Egui,
     pub maze: SmartGrid,
-    pub solved_maze: Option<SmartGrid>,
+    pub solved_maze: SolvedMaze,
     pub origin: Point,
     pub cell_size: f32,
 }
@@ -159,13 +163,16 @@ fn update(_app: &App, model: &mut Model, update: Update) {
 
             ui.separator();
             ui.label("Height:");
-            ui.add(egui::Slider::new(&mut settings.height, 2.0..=20.0));
+            ui.add(egui::Slider::new(&mut settings.height, 2.0..=50.0));
 
             ui.label("Width:");
-            ui.add(egui::Slider::new(&mut settings.width, 2.0..=20.0));
+            ui.add(egui::Slider::new(&mut settings.width, 2.0..=50.0));
 
             ui.label("Corridor size");
-            ui.add(egui::Slider::new(&mut settings.density, 0.1..=100.0));
+            ui.add(egui::Slider::new(&mut settings.corridor_size, 0.1..=100.0));
+
+            ui.label("Wall thickness");
+            ui.add(egui::Slider::new(&mut settings.wall_size, 0.1..=100.0));
 
             ui.separator();
             ui.label("Colours");
@@ -196,7 +203,7 @@ fn update(_app: &App, model: &mut Model, update: Update) {
         });
 
     if settings.generate {
-        model.cell_size = settings.density;
+        model.cell_size = settings.corridor_size;
         let rows = settings.height as usize;
         let columns = settings.width as usize;
         let base_grid = prepare_grid(columns, rows);
@@ -269,6 +276,7 @@ impl Default for WallColours {
 
 fn draw_maze(model: &Model, draw: &Draw, colours: WallColours) {
     let is_solved = model.solved_maze.is_some();
+    let line_weight = model.settings.wall_size;
     for row in &model.maze.cells {
         for cell in row.iter() {
             let cell = cell.borrow_mut();
@@ -311,28 +319,28 @@ fn draw_maze(model: &Model, draw: &Draw, colours: WallColours) {
                 draw.line()
                     .start(north_west_point)
                     .end(north_east_point)
-                    .weight(2.0)
+                    .weight(line_weight)
                     .color(colours.north);
             }
             if draw_west {
                 draw.line()
                     .start(north_west_point)
                     .end(south_west_point)
-                    .weight(2.0)
+                    .weight(line_weight)
                     .color(colours.west);
             }
             if draw_east {
                 draw.line()
                     .start(north_east_point)
                     .end(south_east_point)
-                    .weight(2.0)
+                    .weight(line_weight)
                     .color(colours.east);
             }
             if draw_south {
                 draw.line()
                     .start(south_west_point)
                     .end(south_east_point)
-                    .weight(2.0)
+                    .weight(line_weight)
                     .color(colours.south);
             }
         }
