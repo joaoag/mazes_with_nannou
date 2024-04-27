@@ -23,13 +23,11 @@ struct Settings {
     saving: bool,
     solve: bool,
     colour_type: ColourType,
-    // wall_colours: WallColours,
     walls: Walls,
     algo: Algos,
     height: f64,
     width: f64,
     corridor_size: f32,
-    // wall_size: f32,
 }
 impl Default for Settings {
     fn default() -> Self {
@@ -42,8 +40,6 @@ impl Default for Settings {
             corridor_size: 30.0,
             solve: false,
             colour_type: ColourType::Default,
-            // wall_colours: Default::default(),
-            // wall_size: 2.0,
             walls: Walls::default(),
         }
     }
