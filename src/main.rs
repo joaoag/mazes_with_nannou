@@ -29,7 +29,22 @@ struct Settings {
     width: f64,
     density: f32,
 }
-#[derive(PartialEq, Debug, Default)]
+impl Default for Settings {
+    fn default() -> Self {
+        Settings {
+            generate: false,
+            saving: false,
+            algo: Algos::BinaryTree,
+            height: 15.0,
+            width: 15.0,
+            density: 30.0,
+            solve: false,
+            colour_type: ColourType::Default,
+            wall_colours: Default::default(),
+        }
+    }
+}
+#[derive(PartialEq, Debug, Clone, Copy)]
 struct WallColours {
     north: Rgb8,
     east: Rgb8,
@@ -62,6 +77,11 @@ struct Model {
     pub origin: Point,
     pub cell_size: f32,
 }
+struct MazeAndMetaData {
+    maze: SmartGrid,
+    origin: Point,
+    cell_size: f32,
+}
 
 fn main() {
     nannou::app(model).update(update).run();
@@ -77,23 +97,25 @@ fn prepare_grid(columns: usize, rows: usize) -> SmartGrid {
     grid.configure_cells();
     grid
 }
-
-fn model(app: &App) -> Model {
+fn calculate_origin(columns: f32, rows: f32, cell_size: f32) -> Point {
+    let x = -(columns / 2.0) * cell_size;
+    let y = (rows / 2.0) * cell_size;
+    Point { x, y }
+}
+fn initial_maze() -> MazeAndMetaData {
     let cell_size: f32 = 30.0;
     let columns = 15;
     let rows = 15;
-    let settings = Settings {
-        generate: false,
-        saving: false,
-        algo: Algos::BinaryTree,
-        height: 15.0,
-        width: 15.0,
-        density: cell_size,
-        solve: false,
-        colour_type: ColourType::Default,
-        wall_colours: Default::default(),
-    };
-
+    let origin = calculate_origin(columns as f32, rows as f32, cell_size);
+    let grid = prepare_grid(columns, rows);
+    let maze = binary_tree(grid);
+    MazeAndMetaData {
+        maze,
+        origin,
+        cell_size,
+    }
+}
+fn model(app: &App) -> Model {
     let window_id = app
         .new_window()
         .view(view)
@@ -101,21 +123,19 @@ fn model(app: &App) -> Model {
         .build()
         .unwrap();
     let window = app.window(window_id).unwrap();
-
     let egui = Egui::from_window(&window);
+    let settings = Settings::default();
+    let MazeAndMetaData {
+        maze,
+        origin,
+        cell_size,
+    } = initial_maze();
 
-    let x = -(columns as f32 / 2.0) * cell_size;
-    let y = (rows as f32 / 2.0) * cell_size;
-    let origin = Point { x, y };
-
-    let grid = prepare_grid(columns, rows);
-    let maze = binary_tree(grid);
-    let solved_maze = None;
     Model {
         settings,
         egui,
         maze,
-        solved_maze,
+        solved_maze: None,
         origin,
         cell_size,
     }
@@ -164,7 +184,6 @@ fn update(_app: &App, model: &mut Model, update: Update) {
                 edit_rgb(ui, &mut settings.wall_colours.south);
                 ui.label("West");
                 edit_rgb(ui, &mut settings.wall_colours.west);
-                // next step, link colour to model/settings
             }
 
             ui.separator();
@@ -193,14 +212,6 @@ fn update(_app: &App, model: &mut Model, update: Update) {
     }
 }
 fn edit_rgb(ui: &mut egui::Ui, color: &mut Rgb8) {
-    // declare an egui_rgb, created using values from colour arg
-    // pass egui_rgb into the colour picker
-    // if the colour picker changes, and therefore egui_rgb is mutated
-    // re declare colour as equal to the values from egui_rgb
-
-    // let mut egui_rgb = [color.red as f32, color.green as f32, color.blue as f32];
-    // next step, sort out the u8 f32 conversions
-    // let mut egui_rgb = Rgba::from_rgb(color.red as f32, color.green as f32, color.blue as f32);
     let mut egui_rgb = [color.red, color.green, color.blue];
 
     if egui::color_picker::color_edit_button_srgb(ui, &mut egui_rgb).changed() {
@@ -224,10 +235,10 @@ fn raw_window_event(_app: &App, model: &mut Model, event: &nannou::winit::event:
 
 fn view(app: &App, model: &Model, frame: Frame) {
     let draw = app.draw();
-
     draw.background().color(BLACK);
 
-    draw_maze(model, &draw);
+    let colours = get_wall_colours(&model.settings);
+    draw_maze(model, &draw, colours);
 
     draw.to_frame(app, &frame).unwrap();
 
@@ -239,49 +250,28 @@ fn view(app: &App, model: &Model, frame: Frame) {
     }
 }
 
-struct Walls {
-    north: Rgb8,
-    east: Rgb8,
-    south: Rgb8,
-    west: Rgb8,
+impl WallColours {
+    pub fn party() -> Self {
+        WallColours {
+            north: rgb8(random::<u8>(), random::<u8>(), random::<u8>()),
+            east: rgb8(random::<u8>(), random::<u8>(), random::<u8>()),
+            south: rgb8(random::<u8>(), random::<u8>(), random::<u8>()),
+            west: rgb8(random::<u8>(), random::<u8>(), random::<u8>()),
+        }
+    }
+}
+impl Default for WallColours {
+    fn default() -> Self {
+        WallColours {
+            north: rgb8(255u8, 0u8, 0u8),
+            east: rgb8(255u8, 255u8, 0u8),
+            south: rgb8(0u8, 128u8, 0u8),
+            west: rgb8(255u8, 165u8, 0u8),
+        }
+    }
 }
 
-fn draw_maze(model: &Model, draw: &Draw) {
-    let Model { settings, .. } = model;
-
-    let party_colours = rgb8(random::<u8>(), random::<u8>(), random::<u8>());
-    let north_default = rgb8(255u8, 0u8, 0u8);
-    let east_default = rgb8(255u8, 255u8, 0u8);
-    let south_default = rgb8(0u8, 128u8, 0u8);
-    let west_default = rgb8(255u8, 165u8, 0u8);
-    let colour_type = settings.colour_type;
-    let party_walls = Walls {
-        north: party_colours,
-        east: party_colours,
-        south: party_colours,
-        west: party_colours,
-    };
-    let default_walls = Walls {
-        north: north_default,
-        east: east_default,
-        south: south_default,
-        west: west_default,
-    };
-
-    let custom_colours = &settings.wall_colours;
-    let custom_walls = Walls {
-        north: custom_colours.north,
-        east: custom_colours.east,
-        south: custom_colours.south,
-        west: custom_colours.west,
-    };
-
-    let colours = match colour_type {
-        ColourType::Party => party_walls,
-        ColourType::Default => default_walls,
-        ColourType::Custom => custom_walls,
-    };
-
+fn draw_maze(model: &Model, draw: &Draw, colours: WallColours) {
     let is_solved = model.solved_maze.is_some();
     for row in &model.maze.cells {
         for cell in row.iter() {
@@ -350,6 +340,19 @@ fn draw_maze(model: &Model, draw: &Draw) {
                     .color(colours.south);
             }
         }
+    }
+}
+
+fn get_wall_colours(settings: &Settings) -> WallColours {
+    let colour_type = settings.colour_type;
+    let party_walls = WallColours::party();
+    let default_walls = WallColours::default();
+    let custom_colours = settings.wall_colours;
+
+    match colour_type {
+        ColourType::Party => party_walls,
+        ColourType::Default => default_walls,
+        ColourType::Custom => custom_colours,
     }
 }
 
