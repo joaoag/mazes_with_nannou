@@ -200,22 +200,18 @@ fn update(_app: &App, model: &mut Model, update: Update) {
         let rows = settings.height as usize;
         let columns = settings.width as usize;
         let base_grid = prepare_grid(columns, rows);
-
-        let x = -(columns as f32 / 2.0) * model.cell_size;
-        let y = (rows as f32 / 2.0) * model.cell_size;
-        model.origin = Point { x, y };
-
+        model.origin = calculate_origin(columns as f32, rows as f32, model.cell_size);
         model.maze = generate_maze(base_grid, &settings.algo)
     }
     if settings.solve {
         model.solved_maze = Some(dijkstra_simplified_solver(model.maze.clone()))
     }
 }
-fn edit_rgb(ui: &mut egui::Ui, color: &mut Rgb8) {
-    let mut egui_rgb = [color.red, color.green, color.blue];
+fn edit_rgb(ui: &mut egui::Ui, colour: &mut Rgb8) {
+    let mut egui_rgb = [colour.red, colour.green, colour.blue];
 
     if egui::color_picker::color_edit_button_srgb(ui, &mut egui_rgb).changed() {
-        *color = rgb8(egui_rgb[0], egui_rgb[1], egui_rgb[2]);
+        *colour = rgb8(egui_rgb[0], egui_rgb[1], egui_rgb[2]);
     }
 }
 fn generate_maze(base_grid: SmartGrid, algorithm: &Algos) -> SmartGrid {
