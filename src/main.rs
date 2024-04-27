@@ -23,12 +23,13 @@ struct Settings {
     saving: bool,
     solve: bool,
     colour_type: ColourType,
-    wall_colours: WallColours,
+    // wall_colours: WallColours,
+    walls: Walls,
     algo: Algos,
     height: f64,
     width: f64,
     corridor_size: f32,
-    wall_size: f32,
+    // wall_size: f32,
 }
 impl Default for Settings {
     fn default() -> Self {
@@ -41,10 +42,16 @@ impl Default for Settings {
             corridor_size: 30.0,
             solve: false,
             colour_type: ColourType::Default,
-            wall_colours: Default::default(),
-            wall_size: 2.0,
+            // wall_colours: Default::default(),
+            // wall_size: 2.0,
+            walls: Walls::default(),
         }
     }
+}
+#[derive(Debug, Clone, Copy)]
+struct Walls {
+    width: f32,
+    colours: WallColours,
 }
 #[derive(PartialEq, Debug, Clone, Copy)]
 struct WallColours {
@@ -172,7 +179,7 @@ fn update(_app: &App, model: &mut Model, update: Update) {
             ui.add(egui::Slider::new(&mut settings.corridor_size, 0.1..=100.0));
 
             ui.label("Wall thickness");
-            ui.add(egui::Slider::new(&mut settings.wall_size, 0.1..=100.0));
+            ui.add(egui::Slider::new(&mut settings.walls.width, 0.1..=100.0));
 
             ui.separator();
             ui.label("Colours");
@@ -184,13 +191,13 @@ fn update(_app: &App, model: &mut Model, update: Update) {
             });
             if let ColourType::Custom = settings.colour_type {
                 ui.label("North");
-                edit_rgb(ui, &mut settings.wall_colours.north);
+                edit_rgb(ui, &mut settings.walls.colours.north);
                 ui.label("East");
-                edit_rgb(ui, &mut settings.wall_colours.east);
+                edit_rgb(ui, &mut settings.walls.colours.east);
                 ui.label("South");
-                edit_rgb(ui, &mut settings.wall_colours.south);
+                edit_rgb(ui, &mut settings.walls.colours.south);
                 ui.label("West");
-                edit_rgb(ui, &mut settings.wall_colours.west);
+                edit_rgb(ui, &mut settings.walls.colours.west);
             }
 
             ui.separator();
@@ -273,10 +280,18 @@ impl Default for WallColours {
         }
     }
 }
+impl Default for Walls {
+    fn default() -> Self {
+        Walls {
+            width: 2.0,
+            colours: WallColours::default(),
+        }
+    }
+}
 
 fn draw_maze(model: &Model, draw: &Draw, colours: WallColours) {
     let is_solved = model.solved_maze.is_some();
-    let line_weight = model.settings.wall_size;
+    let line_weight = model.settings.walls.width;
     for row in &model.maze.cells {
         for cell in row.iter() {
             let cell = cell.borrow_mut();
@@ -351,7 +366,7 @@ fn get_wall_colours(settings: &Settings) -> WallColours {
     let colour_type = settings.colour_type;
     let party_walls = WallColours::party();
     let default_walls = WallColours::default();
-    let custom_colours = settings.wall_colours;
+    let custom_colours = settings.walls.colours;
 
     match colour_type {
         ColourType::Party => party_walls,
