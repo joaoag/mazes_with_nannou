@@ -2,7 +2,7 @@ extern crate nannou;
 extern crate nannou_egui;
 extern crate rand;
 
-use nannou::color::named::*;
+use nannou::color::named::BLACK;
 use nannou::prelude::pt2;
 use nannou::prelude::*;
 use nannou_egui::{egui, Egui};
