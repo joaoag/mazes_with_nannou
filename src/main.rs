@@ -17,7 +17,7 @@ mod maze_makers;
 mod maze_solvers;
 mod sidewinder_hardcoded;
 
-#[derive(Debug)]
+#[derive(Debug, Clone, Copy)]
 struct Settings {
     generate: bool,
     saving: bool,
@@ -39,7 +39,7 @@ impl Default for Settings {
             width: 15.0,
             corridor_size: 30.0,
             solve: false,
-            colour_type: ColourType::Default,
+            colour_type: ColourType::default(),
             walls: Walls::default(),
         }
     }
@@ -57,19 +57,19 @@ struct WallColours {
     west: Rgb8,
 }
 
-#[derive(PartialEq, Debug, Clone, Copy)]
+#[derive(PartialEq, Debug, Clone, Copy, Default)]
 enum ColourType {
     Party,
+    #[default]
     Default,
     Custom,
 }
-
 struct Point {
     pub x: f32,
     pub y: f32,
 }
 type SolvedMaze = Option<SmartGrid>;
-#[derive(PartialEq, Debug)]
+#[derive(PartialEq, Debug, Copy, Clone)]
 enum Algos {
     BinaryTree,
     Sidewinder,
@@ -364,7 +364,7 @@ fn get_wall_colours(settings: &Settings) -> WallColours {
 
     match colour_type {
         ColourType::Party => WallColours::party(),
-        ColourType::Default =>  WallColours::default(),
+        ColourType::Default => WallColours::default(),
         ColourType::Custom => custom_colours,
     }
 }
