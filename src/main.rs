@@ -360,13 +360,11 @@ fn draw_maze(model: &Model, draw: &Draw, colours: WallColours) {
 
 fn get_wall_colours(settings: &Settings) -> WallColours {
     let colour_type = settings.colour_type;
-    let party_walls = WallColours::party();
-    let default_walls = WallColours::default();
     let custom_colours = settings.walls.colours;
 
     match colour_type {
-        ColourType::Party => party_walls,
-        ColourType::Default => default_walls,
+        ColourType::Party => WallColours::party(),
+        ColourType::Default =>  WallColours::default(),
         ColourType::Custom => custom_colours,
     }
 }
