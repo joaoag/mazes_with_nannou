@@ -1,4 +1,4 @@
-use crate::maze::{Location, SmartGrid};
+use crate::maze::core::{Location, SmartGrid};
 use std::collections::HashSet;
 use std::iter::FromIterator;
 use std::ops::IndexMut;

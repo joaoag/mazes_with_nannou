@@ -1,4 +1,4 @@
-use crate::maze::{Location, MazeCell, SmartGrid};
+use crate::maze::core::{Location, MazeCell, SmartGrid};
 use std::cell::RefCell;
 use std::rc::Rc;
 

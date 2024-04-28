@@ -1,6 +1,6 @@
 use rand::Rng;
 
-use crate::maze::{Location, SmartGrid};
+use crate::maze::core::{Location, SmartGrid};
 use rand::seq::SliceRandom;
 
 const BIDI: bool = true;
