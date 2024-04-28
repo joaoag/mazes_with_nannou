@@ -183,7 +183,7 @@ fn update(_app: &App, model: &mut Model, update: Update) {
 
             ui.vertical(|ui| {
                 ui.radio_value(&mut settings.colour_type, ColourType::Default, "Default");
-                ui.radio_value(&mut settings.colour_type, ColourType::Party, "Party!");
+                ui.radio_value(&mut settings.colour_type, ColourType::Party, "Party (strobe warning)");
                 ui.radio_value(&mut settings.colour_type, ColourType::Custom, "Custom");
             });
             if let ColourType::Custom = settings.colour_type {

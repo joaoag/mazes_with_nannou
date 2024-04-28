@@ -24,6 +24,8 @@ Steps for running locally:
 | `Height`                                          | sets the number of walls on the vertical axis                                                                    |
 | `Width`                                           | sets the number of walls on the horizontal axis                                                                  |
 | `Corrider size`                                   | sets the size of the empty space between the walls                                                               |
+| `Wall thickness`                                  | sets the width of the walls                                                                                      |
+| `Colours`                                         | options for colouring the maze walls, selecting 'Custom' opens a colour picker for each wall (ish)               |
 | `Binary tree`, `Sidewinder`, `Aldous-Broder` etc. | different maze-making algorithms                                                                                 |
 
 
