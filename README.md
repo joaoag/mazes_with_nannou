@@ -30,12 +30,6 @@ Steps for running locally:
 
 
 ## To Do
-* Implement Hunt-and-Kill and Recursive Backtracker algorithms
-* Add:
-  * other maze-making algorithms
-  * wall thickness controls
-  * wall colour controls
-* Pixel display for maze solver
 * Restructure project to make it more idiomatic, misc. code tidying e.g. removing unused code
 * Allow `cli_display()` to be triggered from the command line, update docs accordingly
 * Address bugs that happen when width is set to more than one greater value than height
