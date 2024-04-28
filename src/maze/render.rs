@@ -1,9 +1,9 @@
-use nannou::color::{rgb8, Rgb8};
-use nannou::Draw;
-use nannou::geom::pt2;
-use rand::random;
-use crate::{Model };
 use crate::maze::core::{Direction, MazeCell};
+use crate::Model;
+use nannou::color::{rgb8, Rgb8};
+use nannou::geom::pt2;
+use nannou::Draw;
+use rand::random;
 
 #[derive(Debug, Clone, Copy)]
 pub struct Walls {

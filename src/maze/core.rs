@@ -1,7 +1,6 @@
 use std::cell::{RefCell, RefMut};
 use std::rc::Rc;
 
-
 #[derive(Debug)]
 pub struct Link {
     pub source: Location,
@@ -75,8 +74,6 @@ impl SmartGrid {
     pub fn prepare_grid(&mut self) -> Vec<Vec<Rc<RefCell<MazeCell>>>> {
         // TODO use new consistently for initialising empty Vec
         let mut cells = Vec::new();
-        // can I wrap the Rc and RefCell in a type, say SmartCell
-        // no leave this out, it's idiomatic and expressive to Rust people, wrapping in a type might obscure this
 
         for r in 0..self.rows {
             let mut row: Vec<Rc<RefCell<MazeCell>>> = Vec::new();

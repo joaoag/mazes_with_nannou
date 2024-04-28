@@ -8,11 +8,11 @@ use nannou_egui::{egui, Egui};
 
 use crate::maze::core::SmartGrid;
 use crate::maze::make::{aldous_broder, binary_tree, hunt_and_kill, sidewinder};
+use crate::maze::render::{calculate_origin, draw_maze, ColourType, Point, WallColours, Walls};
 use crate::maze::solve::dijkstra_simplified_solver;
-use crate::maze::render::{calculate_origin, ColourType, draw_maze, Point, WallColours, Walls};
 
-mod sidewinder_hardcoded;
 mod maze;
+mod sidewinder_hardcoded;
 
 #[derive(Debug, Clone, Copy)]
 struct Settings {
@@ -153,7 +153,11 @@ fn update(_app: &App, model: &mut Model, update: Update) {
 
             ui.vertical(|ui| {
                 ui.radio_value(&mut settings.colour_type, ColourType::Default, "Default");
-                ui.radio_value(&mut settings.colour_type, ColourType::Party, "Party (strobe warning)");
+                ui.radio_value(
+                    &mut settings.colour_type,
+                    ColourType::Party,
+                    "Party (strobe warning)",
+                );
                 ui.radio_value(&mut settings.colour_type, ColourType::Custom, "Custom");
             });
             if let ColourType::Custom = settings.colour_type {
@@ -226,8 +230,6 @@ fn view(app: &App, model: &Model, frame: Frame) {
         model.egui.draw_to_frame(&frame).unwrap();
     }
 }
-
-
 
 fn get_wall_colours(settings: &Settings) -> WallColours {
     let colour_type = settings.colour_type;

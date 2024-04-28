@@ -6,8 +6,7 @@ use rand::seq::SliceRandom;
 const BIDI: bool = true;
 
 fn binary_tree_random_neighbour(eastern: Location, northern: Location) -> Location {
-    // Do I need to do this in two steps?
-    let mut neighbours: Vec<Location> = vec![];
+    let mut neighbours: Vec<Location> = Vec::new();
     neighbours.extend([eastern, northern]);
 
     let linked_location = rand::thread_rng().gen_range(0..=1);
@@ -109,7 +108,7 @@ pub fn aldous_broder(grid: SmartGrid) -> SmartGrid {
 }
 
 fn get_unvisited_neighbours(neighbours: Vec<Location>, grid: &SmartGrid) -> Vec<Location> {
-    let mut unvisited = vec![];
+    let mut unvisited = Vec::new();
     for location in neighbours {
         let cell = grid.cells[location.row][location.column].borrow();
         if cell.is_unlinked() {
@@ -120,7 +119,7 @@ fn get_unvisited_neighbours(neighbours: Vec<Location>, grid: &SmartGrid) -> Vec<
 }
 
 fn get_visited_neighbours(neighbours: Vec<Location>, grid: &SmartGrid) -> Vec<Location> {
-    let mut visited = vec![];
+    let mut visited = Vec::new();
     for location in neighbours {
         let cell = grid.cells[location.row][location.column].borrow();
         if cell.is_linked() {
