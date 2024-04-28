@@ -72,7 +72,6 @@ pub struct SmartGrid {
 
 impl SmartGrid {
     pub fn prepare_grid(&mut self) -> Vec<Vec<Rc<RefCell<MazeCell>>>> {
-        // TODO use new consistently for initialising empty Vec
         let mut cells = Vec::new();
 
         for r in 0..self.rows {
