@@ -137,10 +137,10 @@ fn update(_app: &App, model: &mut Model, update: Update) {
 
             ui.separator();
             ui.label("Height:");
-            ui.add(egui::Slider::new(&mut settings.height, 2.0..=50.0));
+            ui.add(egui::Slider::new(&mut settings.height, 2.0..=100.0));
 
             ui.label("Width:");
-            ui.add(egui::Slider::new(&mut settings.width, 2.0..=50.0));
+            ui.add(egui::Slider::new(&mut settings.width, 2.0..=100.0));
 
             ui.label("Corridor size");
             ui.add(egui::Slider::new(&mut settings.corridor_size, 0.1..=100.0));
