@@ -33,3 +33,4 @@ Steps for running locally:
 * Restructure project to make it more idiomatic, misc. code tidying e.g. removing unused code
 * Allow `cli_display()` to be triggered from the command line, update docs accordingly
 * Address bugs that happen when width is set to more than one greater value than height
+* Consider making browser-version using WASM, like this [example](https://github.com/JulianCataldo/astro-nannou-starter)
