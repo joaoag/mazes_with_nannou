@@ -41,7 +41,6 @@ impl Default for Settings {
         }
     }
 }
-
 type SolvedMaze = Option<SmartGrid>;
 #[derive(PartialEq, Debug, Copy, Clone, Default)]
 enum Algos {
@@ -74,6 +73,7 @@ fn prepare_grid(columns: usize, rows: usize) -> SmartGrid {
         rows,
         columns,
         cells: Vec::new(),
+        max_distance: 0,
     };
     grid.cells = grid.prepare_grid();
     grid.configure_cells();

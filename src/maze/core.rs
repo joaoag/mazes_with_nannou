@@ -68,6 +68,7 @@ pub struct SmartGrid {
     pub rows: usize,
     pub columns: usize,
     pub cells: Vec<Vec<Rc<RefCell<MazeCell>>>>,
+    pub max_distance: usize,
 }
 
 impl SmartGrid {

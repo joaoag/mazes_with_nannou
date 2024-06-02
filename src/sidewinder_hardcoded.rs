@@ -196,5 +196,6 @@ pub fn static_sidewinder() -> SmartGrid {
                 })),
             ],
         ],
+        max_distance: 0,
     }
 }
