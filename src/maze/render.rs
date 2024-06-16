@@ -101,7 +101,7 @@ pub fn draw_maze(model: &Model, draw: &Draw, colours: WallColours) {
             let draw_south = !MazeCell::is_linked_to(&cell, Direction::South);
             if is_solved {
                 draw.quad()
-                    .rgb8(1, 2, ((255 / max_distance) * cell.distance) as u8)
+                    .rgb8((((255 / max_distance) * cell.distance) / 3) as u8, 2, ((255 / max_distance) * cell.distance) as u8)
                     .points(
                         north_west_point,
                         north_east_point,
