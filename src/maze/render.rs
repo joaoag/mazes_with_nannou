@@ -64,12 +64,10 @@ pub fn calculate_origin(columns: f32, rows: f32, cell_size: f32) -> Point {
     Point { x, y }
 }
 pub fn draw_maze(model: &Model, draw: &Draw, colours: WallColours) {
-    let is_solved = model.solved_maze.is_some();
+    let is_solved = model.is_solved;
     let mut max_distance = 1;
     if is_solved {
-        max_distance = <Option<SmartGrid> as Clone>::clone(&model.solved_maze)
-            .unwrap()
-            .max_distance;
+        max_distance = model.maze.max_distance
     }
 
     let line_weight = model.settings.walls.width;

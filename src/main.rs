@@ -54,7 +54,7 @@ struct Model {
     pub settings: Settings,
     pub egui: Egui,
     pub maze: SmartGrid,
-    pub solved_maze: Option<SmartGrid>,
+    pub is_solved: bool,
     pub origin: Point,
     pub cell_size: f32,
 }
@@ -113,7 +113,7 @@ fn model(app: &App) -> Model {
         settings,
         egui,
         maze,
-        solved_maze: None,
+        is_solved: false,
         origin,
         cell_size,
     }
@@ -189,7 +189,8 @@ fn update(_app: &App, model: &mut Model, update: Update) {
         model.maze = generate_maze(base_grid, &settings.algo)
     }
     if settings.solve {
-        model.solved_maze = Some(dijkstra_simplified_solver(model.maze.clone()))
+        model.is_solved = true;
+        model.maze = dijkstra_simplified_solver(model.maze.clone())
     }
 }
 fn edit_rgb(ui: &mut egui::Ui, colour: &mut Rgb8) {
