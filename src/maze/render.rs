@@ -64,13 +64,7 @@ pub fn calculate_origin(columns: f32, rows: f32, cell_size: f32) -> Point {
     Point { x, y }
 }
 pub fn draw_maze(model: &Model, draw: &Draw, colours: WallColours) {
-    let is_solved = model.solved_maze.is_some();
-    let mut max_distance = 1;
-    if is_solved {
-        max_distance = <Option<SmartGrid> as Clone>::clone(&model.solved_maze)
-            .unwrap()
-            .max_distance;
-    }
+    let is_solved = model.is_solved;
 
     let line_weight = model.settings.walls.width;
     for row in &model.maze.cells {
@@ -101,7 +95,7 @@ pub fn draw_maze(model: &Model, draw: &Draw, colours: WallColours) {
             let draw_south = !MazeCell::is_linked_to(&cell, Direction::South);
             if is_solved {
                 draw.quad()
-                    .rgb8(1, 2, ((255 / max_distance) * cell.distance) as u8)
+                    .rgb8((((255 / model.maze.max_distance) * cell.distance) / 3) as u8, 2, ((255 / model.maze.max_distance) * cell.distance) as u8)
                     .points(
                         north_west_point,
                         north_east_point,
