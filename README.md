@@ -31,7 +31,6 @@ Steps for running locally:
 
 ## To Do
 * Investigate whether filename can be made of variables used to create the maze in question e.g. recording corridor size etc.
-* Improve copying of SmartGrid as it goes into the solver, current approach is not ideal (two SmartGrid instances sharing data for their `cells` values)
 * Restructure project to make it more idiomatic, misc. code tidying e.g. removing unused code
 * Allow `cli_display()` to be triggered from the command line, update docs accordingly
 * Address bugs that happen when width is set to more than one greater value than height
