@@ -41,7 +41,7 @@ impl Default for Settings {
         }
     }
 }
-type SolvedMaze = Option<SmartGrid>;
+
 #[derive(PartialEq, Debug, Copy, Clone, Default)]
 enum Algos {
     #[default]
@@ -54,7 +54,7 @@ struct Model {
     pub settings: Settings,
     pub egui: Egui,
     pub maze: SmartGrid,
-    pub solved_maze: SolvedMaze,
+    pub solved_maze: Option<SmartGrid>,
     pub origin: Point,
     pub cell_size: f32,
 }

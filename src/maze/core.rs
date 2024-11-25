@@ -1,5 +1,6 @@
 use std::cell::{RefCell, RefMut};
 use std::rc::Rc;
+use std::clone::Clone;
 
 #[derive(Debug)]
 pub struct Link {
@@ -63,12 +64,41 @@ impl MazeCell {
     }
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug)]
 pub struct SmartGrid {
     pub rows: usize,
     pub columns: usize,
     pub cells: Vec<Vec<Rc<RefCell<MazeCell>>>>,
     pub max_distance: usize,
+}
+
+impl Clone for SmartGrid {
+    fn clone(&self) -> Self {
+        let new_cells: Vec<Vec<Rc<RefCell<MazeCell>>>> = self.cells.iter().map(|row| {
+            row.iter().map(|cell_rc| {
+                let original_cell = cell_rc.borrow();
+
+                let new_cell = MazeCell {
+                    location: original_cell.location,
+                    north: original_cell.north,
+                    east: original_cell.east,
+                    south: original_cell.south,
+                    west: original_cell.west,
+                    links: original_cell.links.clone(),
+                    distance: original_cell.distance,
+                };
+
+                Rc::new(RefCell::new(new_cell))
+            }).collect()
+        }).collect();
+
+        SmartGrid {
+            rows: self.rows,
+            columns: self.columns,
+            cells: new_cells,
+            max_distance: self.max_distance,
+        }
+    }
 }
 
 impl SmartGrid {
