@@ -160,7 +160,7 @@ impl SmartGrid {
                 }
             }
             Direction::West => {
-                if row_range.contains(&(current_column - 1)) {
+                if col_range.contains(&(current_column - 1)) {
                     Some(Location {
                         row: current_location.row,
                         column: current_location.column - 1,

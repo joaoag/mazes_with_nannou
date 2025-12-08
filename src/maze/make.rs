@@ -83,8 +83,7 @@ fn random_cell_location(grid: &SmartGrid) -> Location {
 }
 
 pub fn aldous_broder(grid: SmartGrid) -> SmartGrid {
-    // no idea why count needs the -1...but it does
-    let mut unvisited_count = grid.columns * grid.columns - 1;
+    let mut unvisited_count = grid.rows * grid.columns - 1;
     let location = random_cell_location(&grid);
     let mut current_cell = &grid.cells[location.row][location.column];
     while unvisited_count > 0 {
