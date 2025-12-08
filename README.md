@@ -14,6 +14,10 @@ Steps for running locally:
 4. You should then see something like the below:
 ![Screenshot of the UI, set to default values](./ui_screenshot.png)
 
+### Running tests
+
+Run `cargo test` to execute the test suite.
+
 ### User guide
 
 | Button                                            | Behaviour                                                                                                        |
